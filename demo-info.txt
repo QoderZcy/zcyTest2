@@ -1,0 +1,44 @@
+/* 登录页面演示说明 */
+
+/* 
+如何运行这个登录页面：
+
+1. 最简单的方法：
+   - 直接双击 index.html 文件
+   - 或者右键选择"使用浏览器打开"
+
+2. 使用HTTP服务器（推荐）：
+   如果你有以下工具之一：
+
+   Python:
+   python3 -m http.server 8080
+   然后访问 http://localhost:8080
+
+   Node.js:
+   npm install -g http-server
+   http-server -p 8080
+   然后访问 http://localhost:8080
+
+   PHP:
+   php -S localhost:8080
+   然后访问 http://localhost:8080
+
+测试账户：
+- 用户名: admin, 密码: 123456
+- 用户名: user, 密码: password  
+- 用户名: test, 密码: test123
+
+功能特点：
+✅ 响应式设计，支持手机和桌面
+✅ 表单验证和用户反馈
+✅ 记住我功能
+✅ 平滑动画效果
+✅ 现代化UI设计
+✅ 社交登录按钮（UI已就绪）
+✅ 忘记密码链接（UI已就绪）
+
+如需集成到真实项目：
+1. 修改 script.js 中的 authenticateUser 函数
+2. 连接到你的后端API
+3. 处理真实的用户认证逻辑
+*/
