@@ -1,0 +1,74 @@
+# 测试环境配置
+spring:
+  application:
+    name: photo-upload-system-test
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+file:
+  storage:
+    base-path: ./test-uploads
+    temp-path: ./test-uploads/temp
+    thumbnail-path: ./test-uploads/thumbnails
+    allowed-types:
+      - image/jpeg
+      - image/png
+      - image/gif
+    allowed-extensions:
+      - jpg
+      - jpeg
+      - png
+      - gif
+    max-file-size: 10485760
+    max-files-per-upload: 10
+    thumbnail:
+      width: 200
+      height: 200
+      quality: 0.8
+    compression:
+      enabled: false
+      quality: 0.85
+      max-width: 1920
+      max-height: 1080
+    max-storage-size: 10737418240
+    cleanup:
+      enabled: false
+
+security:
+  referer:
+    enabled: false
+  token:
+    secret: test-secret-key
+    expiration: 86400
+  cors:
+    enabled: true
+    allowed-origins:
+      - http://localhost:3000
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+
+logging:
+  level:
+    root: INFO
+    com.photo: DEBUG

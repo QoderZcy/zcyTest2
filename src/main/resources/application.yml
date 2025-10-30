@@ -1,0 +1,172 @@
+spring:
+  application:
+    name: photo-upload-system
+  
+  # 数据源配置
+  datasource:
+    # H2数据库配置(开发环境)
+    url: jdbc:h2:file:./data/photodb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+    
+    # MySQL数据库配置(生产环境)
+    # url: jdbc:mysql://localhost:3306/photo_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    # driver-class-name: com.mysql.cj.jdbc.Driver
+    # username: root
+    # password: root
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+        # dialect: org.hibernate.dialect.MySQLDialect
+  
+  # H2控制台配置
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+      file-size-threshold: 2MB
+  
+  # 缓存配置
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=3600s
+
+# 文件存储配置
+file:
+  storage:
+    # 文件存储根目录
+    base-path: ./uploads
+    # 临时文件目录
+    temp-path: ./uploads/temp
+    # 缩略图目录
+    thumbnail-path: ./uploads/thumbnails
+    # 允许的文件类型
+    allowed-types:
+      - image/jpeg
+      - image/jpg
+      - image/png
+      - image/gif
+      - image/bmp
+      - image/webp
+    # 允许的文件扩展名
+    allowed-extensions:
+      - jpg
+      - jpeg
+      - png
+      - gif
+      - bmp
+      - webp
+    # 最大文件大小(字节)
+    max-file-size: 10485760  # 10MB
+    # 最大单次上传文件数
+    max-files-per-upload: 10
+    # 缩略图配置
+    thumbnail:
+      width: 200
+      height: 200
+      quality: 0.8
+    # 图片压缩配置
+    compression:
+      enabled: true
+      quality: 0.85
+      max-width: 1920
+      max-height: 1080
+    # 存储容量限制(字节)
+    max-storage-size: 10737418240  # 10GB
+    # 定期清理配置
+    cleanup:
+      enabled: true
+      # 清理间隔(天)
+      days-to-keep: 30
+      # 定时任务cron表达式(每天凌晨2点执行)
+      cron: "0 0 2 * * ?"
+
+# 安全配置
+security:
+  # 防盗链配置
+  referer:
+    enabled: true
+    allowed-domains:
+      - localhost
+      - 127.0.0.1
+  # Token配置
+  token:
+    secret: your-secret-key-change-this-in-production
+    expiration: 86400  # 24小时
+  # CORS配置
+  cors:
+    enabled: true
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:8080
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.photo: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ./logs/photo-upload-system.log
+    max-size: 10MB
+    max-history: 30
+
+# 服务器配置
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,application/javascript,application/json,image/svg+xml
+  tomcat:
+    max-connections: 10000
+    threads:
+      max: 200
+      min-spare: 10
+
+# Actuator监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# API文档配置
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
