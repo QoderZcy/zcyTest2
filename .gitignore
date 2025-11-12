@@ -4,7 +4,7 @@ target/
 *.jar
 *.war
 *.ear
-
+*.ear1
 # 忽略日志文件
 logs/
 *.log
