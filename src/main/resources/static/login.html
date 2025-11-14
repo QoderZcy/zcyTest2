@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录 - 照片上传系统</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- 系统标题 -->
+            <div class="login-header">
+                <h1>照片上传系统</h1>
+                <p>Photo Upload System</p>
+            </div>
+
+            <!-- 提示信息区域 -->
+            <div id="messageBox" class="message-box" style="display: none;">
+                <span id="messageText"></span>
+                <button class="close-btn" onclick="closeMessage()">&times;</button>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm" action="/login" method="post">
+                <!-- CSRF Token -->
+                <input type="hidden" id="csrfToken" name="_csrf" value="">
+                
+                <!-- 用户名输入框 -->
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="请输入用户名" 
+                        required 
+                        autofocus
+                        minlength="3"
+                        maxlength="20"
+                    >
+                    <span class="error-message" id="usernameError"></span>
+                </div>
+
+                <!-- 密码输入框 -->
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="请输入密码" 
+                        required
+                        minlength="6"
+                        maxlength="20"
+                    >
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <!-- 记住我复选框 -->
+                <div class="form-group remember-me">
+                    <label>
+                        <input 
+                            type="checkbox" 
+                            id="rememberMe" 
+                            name="remember-me" 
+                            value="true"
+                        >
+                        <span>记住我7天</span>
+                    </label>
+                </div>
+
+                <!-- 登录按钮 -->
+                <button type="submit" class="login-btn">登录</button>
+            </form>
+
+            <!-- 底部信息 -->
+            <div class="login-footer">
+                <p>&copy; 2024 照片上传系统. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/login.js"></script>
+</body>
+</html>
