@@ -34,3 +34,39 @@ CREATE TABLE IF NOT EXISTS photos (
 -- 插入测试数据(可选)
 -- INSERT INTO photos (original_filename, stored_filename, file_path, file_size, content_type, extension, user_id)
 -- VALUES ('test.jpg', 'abc123.jpg', '/uploads/abc123.jpg', 1024000, 'image/jpeg', 'jpg', 'admin');
+
+-- 用户表
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
+    password VARCHAR(100) NOT NULL COMMENT '密码(BCrypt加密)',
+    enabled BOOLEAN DEFAULT TRUE NOT NULL COMMENT '账户是否启用',
+    locked BOOLEAN DEFAULT FALSE NOT NULL COMMENT '账户是否锁定',
+    failed_attempts INT DEFAULT 0 NOT NULL COMMENT '连续失败登录次数',
+    locked_time TIMESTAMP NULL COMMENT '账户锁定时间',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建时间',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL COMMENT '更新时间',
+    
+    INDEX idx_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
+-- 记住我Token表
+CREATE TABLE IF NOT EXISTS remember_me_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL COMMENT '用户名',
+    token VARCHAR(100) NOT NULL UNIQUE COMMENT 'Token值',
+    expires_at TIMESTAMP NOT NULL COMMENT 'Token过期时间',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Token创建时间',
+    
+    INDEX idx_token (token),
+    INDEX idx_username (username),
+    INDEX idx_expires_at (expires_at),
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='记住我Token表';
+
+-- 插入默认管理员账户
+-- 用户名: admin
+-- 密码: admin123 (BCrypt加密后的值)
+INSERT INTO users (username, password, enabled, locked, failed_attempts)
+VALUES ('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', TRUE, FALSE, 0)
+ON DUPLICATE KEY UPDATE username = username;
