@@ -30,7 +30,28 @@
         h1 {
             color: #333;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
+        }
+        
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
         }
         
         .upload-section {
@@ -237,6 +258,7 @@
 <body>
     <div class="container">
         <h1>📸 照片上传系统</h1>
+        <div class="user-info"></div>
         
         <!-- 存储空间信息 -->
         <div class="storage-info" id="storageInfo">
@@ -274,7 +296,98 @@
 
     <script>
         const API_BASE_URL = 'http://localhost:8080/api';
-        const USER_ID = 'guest';
+        let currentUser = null;
+        
+        // 页面加载时检查登录状态
+        window.onload = function() {
+            checkAuth();
+        };
+        
+        // 检查认证
+        async function checkAuth() {
+            const token = getToken();
+            if (!token) {
+                // 未登录，跳转到登录页面
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/auth/current`);
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    currentUser = result.data;
+                    updateUserInfo();
+                    loadPhotos();
+                    loadStorageInfo();
+                } else {
+                    // Token无效，清除并跳转
+                    clearAuth();
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('认证失败:', error);
+                clearAuth();
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 获取Token
+        function getToken() {
+            return localStorage.getItem('token') || sessionStorage.getItem('token');
+        }
+        
+        // 清除认证信息
+        function clearAuth() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('username');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('userId');
+            sessionStorage.removeItem('username');
+        }
+        
+        // 带Token的fetch请求
+        function fetchWithAuth(url, options = {}) {
+            const token = getToken();
+            const headers = {
+                ...options.headers,
+                'Authorization': `Bearer ${token}`
+            };
+            
+            return fetch(url, {
+                ...options,
+                headers: headers
+            });
+        }
+        
+        // 更新用户信息显示
+        function updateUserInfo() {
+            if (currentUser) {
+                const userInfoDiv = document.querySelector('.user-info');
+                if (userInfoDiv) {
+                    userInfoDiv.innerHTML = `
+                        <span>欢迎，${currentUser.username}</span>
+                        <button class="logout-btn" onclick="logout()">退出登录</button>
+                    `;
+                }
+            }
+        }
+        
+        // 退出登录
+        async function logout() {
+            try {
+                await fetchWithAuth(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST'
+                });
+            } catch (error) {
+                console.error('退出失败:', error);
+            } finally {
+                clearAuth();
+                window.location.href = 'login.html';
+            }
+        }
         
         let selectedFiles = [];
         
@@ -304,7 +417,7 @@
             selectedFiles.forEach(file => {
                 formData.append('files', file);
             });
-            formData.append('userId', USER_ID);
+            // 不再需要userId，后端从认证信息中获取
             
             const progressBar = document.getElementById('progressBar');
             const progressFill = document.getElementById('progressFill');
@@ -314,8 +427,12 @@
             uploadBtn.disabled = true;
             
             try {
+                const token = getToken();
                 const response = await fetch(`${API_BASE_URL}/photos/upload/batch`, {
                     method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: formData
                 });
                 
@@ -345,17 +462,26 @@
                 showMessage('上传失败: ' + error.message, 'error');
                 progressBar.style.display = 'none';
                 uploadBtn.disabled = false;
+                
+                // 如果是401错误，跳转到登录页面
+                if (error.message.includes('401') || error.message.includes('认证')) {
+                    clearAuth();
+                    window.location.href = 'login.html';
+                }
             }
         }
         
         // 加载照片列表
         async function loadPhotos() {
             try {
-                const response = await fetch(`${API_BASE_URL}/photos/public?page=0&size=20`);
+                const response = await fetchWithAuth(`${API_BASE_URL}/photos/user?page=0&size=20`);
                 const result = await response.json();
                 
                 if (result.code === 200) {
                     displayPhotos(result.data.content);
+                } else if (result.code === 401) {
+                    clearAuth();
+                    window.location.href = 'login.html';
                 }
             } catch (error) {
                 console.error('加载照片失败:', error);
@@ -390,7 +516,7 @@
         // 加载存储空间信息
         async function loadStorageInfo() {
             try {
-                const response = await fetch(`${API_BASE_URL}/photos/storage/info`);
+                const response = await fetchWithAuth(`${API_BASE_URL}/photos/storage/info`);
                 const result = await response.json();
                 
                 if (result.code === 200) {
@@ -408,13 +534,15 @@
         
         // 预览照片
         function viewPhoto(url) {
-            window.open(API_BASE_URL + url, '_blank');
+            const token = getToken();
+            window.open(`${API_BASE_URL}${url}?token=${token}`, '_blank');
         }
         
         // 下载照片
         function downloadPhoto(url, filename) {
+            const token = getToken();
             const link = document.createElement('a');
-            link.href = API_BASE_URL + url;
+            link.href = `${API_BASE_URL}${url}?token=${token}`;
             link.download = filename;
             link.click();
         }
@@ -430,12 +558,6 @@
                 message.style.display = 'none';
             }, 3000);
         }
-        
-        // 页面加载时初始化
-        window.onload = function() {
-            loadPhotos();
-            loadStorageInfo();
-        };
     </script>
 </body>
 </html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 照片上传系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
+        .remember-me label {
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .message.error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .message.success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>📸 照片上传系统</h1>
+            <p>欢迎回来，请登录您的账号</p>
+        </div>
+        
+        <div class="message" id="message"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="请输入用户名" 
+                    required
+                    minlength="3"
+                    maxlength="50"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="请输入密码" 
+                    required
+                    minlength="6"
+                >
+            </div>
+            
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <label for="rememberMe">记住我（30天）</label>
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginBtn">
+                登录
+            </button>
+        </form>
+        
+        <div class="divider">还没有账号？</div>
+        
+        <div class="links">
+            <a href="register.html">立即注册</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        
+        // 页面加载时检查是否已登录
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // 已登录，跳转到主页
+                window.location.href = 'index.html';
+            }
+        };
+        
+        // 表单提交
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // 前端验证
+            if (username.length < 3 || username.length > 50) {
+                showMessage('用户名长度必须在3-50之间', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('密码长度至少6位', 'error');
+                return;
+            }
+            
+            // 禁用按钮
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.textContent = '登录中...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        rememberMe: rememberMe
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    // 登录成功
+                    showMessage('登录成功，正在跳转...', 'success');
+                    
+                    // 存储Token
+                    if (rememberMe) {
+                        localStorage.setItem('token', result.data.token);
+                        localStorage.setItem('userId', result.data.userId);
+                        localStorage.setItem('username', result.data.username);
+                    } else {
+                        sessionStorage.setItem('token', result.data.token);
+                        sessionStorage.setItem('userId', result.data.userId);
+                        sessionStorage.setItem('username', result.data.username);
+                    }
+                    
+                    // 跳转到主页
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showMessage(result.message || '登录失败', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '登录';
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                showMessage('网络连接失败，请稍后重试', 'error');
+                loginBtn.disabled = false;
+                loginBtn.textContent = '登录';
+            }
+        });
+        
+        // 显示消息
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+            
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

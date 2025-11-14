@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 照片上传系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .register-container {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .register-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .register-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .register-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .message.error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .message.success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <h1>📸 照片上传系统</h1>
+            <p>创建您的账号</p>
+        </div>
+        
+        <div class="message" id="message"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="username">用户名 *</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="请输入用户名" 
+                    required
+                    minlength="3"
+                    maxlength="50"
+                >
+                <div class="hint">3-50个字符</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码 *</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="请输入密码" 
+                    required
+                    minlength="6"
+                >
+                <div class="hint">至少6位字符</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">确认密码 *</label>
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    placeholder="请再次输入密码" 
+                    required
+                    minlength="6"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="email">电子邮箱（可选）</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="请输入电子邮箱"
+                >
+            </div>
+            
+            <button type="submit" class="register-btn" id="registerBtn">
+                注册
+            </button>
+        </form>
+        
+        <div class="divider">已有账号？</div>
+        
+        <div class="links">
+            <a href="login.html">返回登录</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        
+        // 页面加载时检查是否已登录
+        window.onload = function() {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (token) {
+                // 已登录，跳转到主页
+                window.location.href = 'index.html';
+            }
+        };
+        
+        // 表单提交
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const email = document.getElementById('email').value.trim();
+            
+            // 前端验证
+            if (username.length < 3 || username.length > 50) {
+                showMessage('用户名长度必须在3-50之间', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('密码长度至少6位', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('两次输入的密码不一致', 'error');
+                return;
+            }
+            
+            // 禁用按钮
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.textContent = '注册中...';
+            
+            try {
+                const requestBody = {
+                    username: username,
+                    password: password
+                };
+                
+                // 如果填写了邮箱，则添加到请求体
+                if (email) {
+                    requestBody.email = email;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    // 注册成功
+                    showMessage('注册成功！3秒后跳转到登录页面...', 'success');
+                    
+                    // 清空表单
+                    document.getElementById('registerForm').reset();
+                    
+                    // 3秒后跳转到登录页面
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 3000);
+                } else {
+                    showMessage(result.message || '注册失败', 'error');
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = '注册';
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                showMessage('网络连接失败，请稍后重试', 'error');
+                registerBtn.disabled = false;
+                registerBtn.textContent = '注册';
+            }
+        });
+        
+        // 显示消息
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+            
+            if (type === 'error') {
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ import com.photo.entity.Photo;
 import com.photo.exception.AccessDeniedException;
 import com.photo.service.FileStorageService;
 import com.photo.service.PhotoService;
+import com.photo.util.JwtUtils;
 import com.photo.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +44,9 @@ public class PhotoController {
     @Autowired
     private SecurityProperties securityProperties;
     
+    @Autowired
+    private JwtUtils jwtUtils;
+    
     /**
      * 上传单个照片
      */
@@ -49,10 +54,11 @@ public class PhotoController {
     @Operation(summary = "上传单个照片", description = "支持图片格式：JPG、PNG、GIF等，最大10MB")
     public ResponseEntity<ApiResponse<PhotoUploadResponse>> uploadPhoto(
             @Parameter(description = "照片文件") @RequestParam("file") MultipartFile file,
-            @Parameter(description = "用户ID") @RequestParam(value = "userId", defaultValue = "guest") String userId,
             @Parameter(description = "照片描述") @RequestParam(value = "description", required = false) String description,
+            Authentication authentication,
             HttpServletRequest request) {
         
+        String userId = authentication.getName();
         log.info("接收到上传请求: 文件={}, 用户={}, IP={}", 
             file.getOriginalFilename(), userId, SecurityUtils.getClientIpAddress(request));
         
@@ -67,10 +73,11 @@ public class PhotoController {
     @Operation(summary = "批量上传照片", description = "一次最多上传10个文件")
     public ResponseEntity<ApiResponse<List<PhotoUploadResponse>>> uploadPhotos(
             @Parameter(description = "照片文件数组") @RequestParam("files") MultipartFile[] files,
-            @Parameter(description = "用户ID") @RequestParam(value = "userId", defaultValue = "guest") String userId,
             @Parameter(description = "照片描述") @RequestParam(value = "description", required = false) String description,
+            Authentication authentication,
             HttpServletRequest request) {
         
+        String userId = authentication.getName();
         log.info("接收到批量上传请求: {} 个文件, 用户={}, IP={}", 
             files.length, userId, SecurityUtils.getClientIpAddress(request));
         
@@ -237,6 +244,21 @@ public class PhotoController {
     }
     
     /**
+     * 获取当前用户的照片列表
+     */
+    @GetMapping("/user")
+    @Operation(summary = "获取当前用户照片列表", description = "分页查询当前用户上传的照片")
+    public ResponseEntity<ApiResponse<Page<PhotoDTO>>> getCurrentUserPhotos(
+            @Parameter(description = "页码") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size,
+            Authentication authentication) {
+        
+        String userId = authentication.getName();
+        Page<PhotoDTO> photos = photoService.getUserPhotos(userId, page, size);
+        return ResponseEntity.ok(ApiResponse.success(photos));
+    }
+    
+    /**
      * 获取用户的照片列表
      */
     @GetMapping("/user/{userId}")
@@ -284,8 +306,9 @@ public class PhotoController {
     @Operation(summary = "删除照片", description = "软删除照片，不会立即删除文件")
     public ResponseEntity<ApiResponse<Void>> deletePhoto(
             @Parameter(description = "照片ID") @PathVariable Long id,
-            @Parameter(description = "用户ID") @RequestParam String userId) {
+            Authentication authentication) {
         
+        String userId = authentication.getName();
         photoService.deletePhoto(id, userId);
         return ResponseEntity.ok(ApiResponse.success("删除成功", null));
     }
@@ -297,8 +320,9 @@ public class PhotoController {
     @Operation(summary = "永久删除照片", description = "物理删除照片及文件")
     public ResponseEntity<ApiResponse<Void>> permanentlyDeletePhoto(
             @Parameter(description = "照片ID") @PathVariable Long id,
-            @Parameter(description = "用户ID") @RequestParam String userId) {
+            Authentication authentication) {
         
+        String userId = authentication.getName();
         photoService.permanentlyDeletePhoto(id, userId);
         return ResponseEntity.ok(ApiResponse.success("永久删除成功", null));
     }
