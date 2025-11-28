@@ -24,6 +24,7 @@
         <thumbnailator.version>0.4.19</thumbnailator.version>
         <commons-io.version>2.11.0</commons-io.version>
         <tika.version>2.9.1</tika.version>
+        <commonmark.version>0.21.0</commonmark.version>
     </properties>
 
     <dependencies>
@@ -43,6 +44,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Starter Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
         <!-- Spring Boot Starter Cache -->
@@ -103,6 +110,13 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <!-- CommonMark Markdown Parser -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>${commonmark.version}</version>
         </dependency>
 
         <!-- Spring Boot Starter Test -->

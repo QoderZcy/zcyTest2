@@ -1,36 +1,54 @@
--- 照片表初始化脚本(可选，JPA会自动创建表)
--- 如果需要手动创建表，可以使用以下SQL
+-- 便签管理系统数据库初始化脚本
+-- 创建便签表
 
--- MySQL版本
-CREATE TABLE IF NOT EXISTS photos (
+CREATE TABLE IF NOT EXISTS notes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    original_filename VARCHAR(500) NOT NULL COMMENT '原始文件名',
-    stored_filename VARCHAR(100) NOT NULL UNIQUE COMMENT '存储文件名',
-    file_path VARCHAR(1000) NOT NULL COMMENT '文件路径',
-    thumbnail_path VARCHAR(1000) COMMENT '缩略图路径',
-    file_size BIGINT NOT NULL COMMENT '文件大小(字节)',
-    content_type VARCHAR(100) NOT NULL COMMENT '文件类型',
-    extension VARCHAR(20) NOT NULL COMMENT '文件扩展名',
-    width INT COMMENT '图片宽度',
-    height INT COMMENT '图片高度',
-    md5 VARCHAR(32) UNIQUE COMMENT 'MD5值',
-    user_id VARCHAR(50) NOT NULL COMMENT '上传用户ID',
-    access_count BIGINT DEFAULT 0 NOT NULL COMMENT '访问次数',
-    download_count BIGINT DEFAULT 0 NOT NULL COMMENT '下载次数',
-    is_public BOOLEAN DEFAULT TRUE NOT NULL COMMENT '是否公开',
-    deleted BOOLEAN DEFAULT FALSE NOT NULL COMMENT '是否已删除',
-    description VARCHAR(1000) COMMENT '描述',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建时间',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL COMMENT '更新时间',
-    last_accessed_at TIMESTAMP COMMENT '最后访问时间',
-    ip_address VARCHAR(50) COMMENT 'IP地址',
-    
-    INDEX idx_original_filename (original_filename),
-    INDEX idx_created_at (created_at),
-    INDEX idx_user_id (user_id),
-    INDEX idx_md5 (md5)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='照片信息表';
+    title VARCHAR(200) NOT NULL,
+    content TEXT,
+    created_time TIMESTAMP NOT NULL,
+    updated_time TIMESTAMP NOT NULL
+);
 
--- 插入测试数据(可选)
--- INSERT INTO photos (original_filename, stored_filename, file_path, file_size, content_type, extension, user_id)
--- VALUES ('test.jpg', 'abc123.jpg', '/uploads/abc123.jpg', 1024000, 'image/jpeg', 'jpg', 'admin');
+-- 创建索引以优化查询性能
+CREATE INDEX IF NOT EXISTS idx_created_time ON notes(created_time);
+
+-- 插入示例数据（可选）
+INSERT INTO notes (title, content, created_time, updated_time) VALUES 
+(
+    '欢迎使用便签管理系统', 
+    '# 欢迎使用便签管理系统 🎉
+
+## 功能特性
+
+这是一个赛博朋克风格的便签管理系统，支持以下功能：
+
+- ✅ **Markdown格式**：支持完整的Markdown语法
+- ✅ **实时预览**：编辑时实时查看渲染效果
+- ✅ **快捷键支持**：Ctrl+S保存，Ctrl+B加粗等
+- ✅ **赛博朋克风格**：霓虹色调、发光效果
+
+## Markdown示例
+
+### 文本样式
+**粗体文本** 和 *斜体文本*
+
+### 列表
+- 便签列表
+- 便签详情
+- 便签编辑
+
+### 代码块
+```java
+public class Note {
+    private String title;
+    private String content;
+}
+```
+
+### 引用
+> 记录你的想法，组织你的生活
+
+开始创建你的第一个便签吧！',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+);

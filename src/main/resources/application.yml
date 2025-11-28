@@ -1,11 +1,11 @@
 spring:
   application:
-    name: photo-upload-system
+    name: note-management-system
   
   # 数据源配置
   datasource:
     # H2数据库配置(开发环境)
-    url: jdbc:h2:file:./data/photodb
+    url: jdbc:h2:file:./data/notesdb
     driver-class-name: org.h2.Driver
     username: sa
     password: 
@@ -27,6 +27,12 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         # dialect: org.hibernate.dialect.MySQLDialect
   
+  # SQL初始化配置
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+  
   # H2控制台配置
   h2:
     console:
@@ -46,6 +52,14 @@ spring:
     type: caffeine
     caffeine:
       spec: maximumSize=1000,expireAfterWrite=3600s
+  
+  # Thymeleaf模板配置
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
 
 # 文件存储配置
 file:
@@ -142,8 +156,6 @@ logging:
 # 服务器配置
 server:
   port: 8080
-  servlet:
-    context-path: /api
   compression:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css,application/javascript,application/json,image/svg+xml

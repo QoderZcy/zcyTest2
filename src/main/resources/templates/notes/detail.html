@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${note.title} + ' - 便签详情'">便签详情</title>
+    <link rel="stylesheet" th:href="@{/css/cyberpunk.css}">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部操作栏 -->
+        <header class="header">
+            <div class="nav-left">
+                <a th:href="@{/}" class="btn btn-secondary">
+                    <span>← 返回列表</span>
+                </a>
+            </div>
+            <div class="nav-right">
+                <a th:href="@{/notes/{id}/edit(id=${note.id})}" class="btn btn-primary">
+                    <span>✎ 编辑</span>
+                </a>
+                <form th:action="@{/notes/{id}/delete(id=${note.id})}" method="post" 
+                      style="display: inline-block;"
+                      onsubmit="return confirm('确定要删除这个便签吗？');">
+                    <button type="submit" class="btn btn-danger">
+                        <span>🗑 删除</span>
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <!-- 消息提示 -->
+        <div th:if="${message}" class="message message-success">
+            <span th:text="${message}"></span>
+        </div>
+        <div th:if="${error}" class="message message-error">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- 便签详情内容 -->
+        <div class="note-detail">
+            <!-- 标题区 -->
+            <h1 class="detail-title" th:text="${note.title}">便签标题</h1>
+            
+            <!-- 时间信息 -->
+            <div class="detail-meta">
+                <span class="meta-item">
+                    <span class="meta-label">创建时间：</span>
+                    <span th:text="${note.createdTime}">2025-11-28 12:00:00</span>
+                </span>
+                <span class="meta-item">
+                    <span class="meta-label">修改时间：</span>
+                    <span th:text="${note.updatedTime}">2025-11-28 12:00:00</span>
+                </span>
+            </div>
+
+            <!-- 内容区（渲染后的HTML） -->
+            <div class="detail-content markdown-body" th:utext="${note.htmlContent}">
+                <p>便签内容</p>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

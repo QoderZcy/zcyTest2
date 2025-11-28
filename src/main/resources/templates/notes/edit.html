@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isNew ? '新建便签' : '编辑便签'}">编辑便签</title>
+    <link rel="stylesheet" th:href="@{/css/cyberpunk.css}">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部操作栏 -->
+        <header class="header">
+            <h1 class="page-title" th:text="${isNew ? '新建便签' : '编辑便签'}">编辑便签</h1>
+            <div class="nav-right">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">
+                    <span>✕ 取消</span>
+                </button>
+                <button type="submit" form="noteForm" class="btn btn-primary">
+                    <span>✓ 保存</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 消息提示 -->
+        <div th:if="${message}" class="message message-success">
+            <span th:text="${message}"></span>
+        </div>
+        <div th:if="${error}" class="message message-error">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- 编辑表单 -->
+        <form id="noteForm" 
+              th:action="${isNew ? '/notes' : '/notes/' + note.id}" 
+              method="post">
+            
+            <div class="editor-container">
+                <!-- 左侧编辑区 -->
+                <div class="editor-panel">
+                    <div class="form-group">
+                        <label for="title" class="form-label">标题</label>
+                        <input type="text" 
+                               id="title" 
+                               name="title" 
+                               class="form-input" 
+                               th:value="${note.title}"
+                               placeholder="输入便签标题..." 
+                               required 
+                               maxlength="200">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content" class="form-label">
+                            内容 
+                            <span class="label-hint">（支持Markdown格式）</span>
+                        </label>
+                        <textarea id="content" 
+                                  name="content" 
+                                  class="form-textarea" 
+                                  placeholder="输入便签内容，支持Markdown格式...&#10;&#10;示例：&#10;# 标题&#10;## 子标题&#10;**粗体** *斜体*&#10;- 列表项1&#10;- 列表项2&#10;&#10;```&#10;代码块&#10;```"
+                                  th:text="${note.content}"></textarea>
+                    </div>
+                </div>
+
+                <!-- 右侧预览区 -->
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        <span class="preview-title">实时预览</span>
+                        <span class="preview-indicator">●</span>
+                    </div>
+                    <div id="preview" class="preview-content markdown-body">
+                        <p class="preview-placeholder">开始输入内容以查看预览...</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- 快捷键提示 -->
+        <div class="shortcuts-hint">
+            <span>快捷键: <kbd>Ctrl</kbd> + <kbd>S</kbd> 保存 | <kbd>Ctrl</kbd> + <kbd>Esc</kbd> 取消</span>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/editor.js}"></script>
+</body>
+</html>
