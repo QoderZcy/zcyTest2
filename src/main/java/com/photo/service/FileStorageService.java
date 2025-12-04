@@ -4,7 +4,7 @@ import com.photo.config.FileStorageProperties;
 import com.photo.exception.FileStorageException;
 import com.photo.util.FileUtils;
 import com.photo.util.ImageUtils;
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

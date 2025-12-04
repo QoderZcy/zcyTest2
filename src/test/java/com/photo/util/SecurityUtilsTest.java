@@ -1,6 +1,6 @@
 package com.photo.util;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -149,7 +149,11 @@ class SecurityUtilsTest {
     @Test
     void testValidateToken() {
         // When & Then
-        assertTrue(SecurityUtils.validateToken("a".repeat(33)));
+        String longToken = "";
+        for (int i = 0; i < 33; i++) {
+            longToken += "a";
+        }
+        assertTrue(SecurityUtils.validateToken(longToken));
         assertFalse(SecurityUtils.validateToken("short"));
         assertFalse(SecurityUtils.validateToken(""));
         assertFalse(SecurityUtils.validateToken(null));

@@ -45,7 +45,7 @@ public class TimeUtils {
      */
     public static void main(String[] args) {
         // 方式1: 打印默认格式的当前时间
-        printCurrentTime();
+        printCurrentTime("yyyy-MM-dd HH:mm:ss");
         
         // 方式2: 打印自定义格式的当前时间
         printCurrentTime("yyyy年MM月dd日 HH:mm:ss");

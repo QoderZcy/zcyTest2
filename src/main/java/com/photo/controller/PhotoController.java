@@ -7,11 +7,11 @@ import com.photo.exception.AccessDeniedException;
 import com.photo.service.FileStorageService;
 import com.photo.service.PhotoService;
 import com.photo.util.SecurityUtils;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/photos")
-@Tag(name = "照片管理", description = "照片上传、下载、查询等接口")
+@Api(tags = "照片管理")
 public class PhotoController {
     
     @Autowired
@@ -46,11 +46,11 @@ public class PhotoController {
      * 上传单个照片
      */
     @PostMapping("/upload")
-    @Operation(summary = "上传单个照片", description = "支持图片格式：JPG、PNG、GIF等，最大10MB")
+    @ApiOperation(value = "上传单个照片", notes = "支持图片格式：JPG、PNG、GIF等，最大9MB")
     public ResponseEntity<ApiResponse<PhotoUploadResponse>> uploadPhoto(
-            @Parameter(description = "照片文件") @RequestParam("file") MultipartFile file,
-            @Parameter(description = "用户ID") @RequestParam(value = "userId", defaultValue = "guest") String userId,
-            @Parameter(description = "照片描述") @RequestParam(value = "description", required = false) String description,
+            @ApiParam("照片文件") @RequestParam("file") MultipartFile file,
+            @ApiParam("用户ID") @RequestParam(value = "userId", defaultValue = "guest") String userId,
+            @ApiParam("照片描述") @RequestParam(value = "description", required = false) String description,
             HttpServletRequest request) {
         
         log.info("接收到上传请求: 文件={}, 用户={}, IP={}", 
@@ -64,11 +64,11 @@ public class PhotoController {
      * 批量上传照片
      */
     @PostMapping("/upload/batch")
-    @Operation(summary = "批量上传照片", description = "一次最多上传10个文件")
+    @ApiOperation(value = "批量上传照片", notes = "一次最多上传10个文件")
     public ResponseEntity<ApiResponse<List<PhotoUploadResponse>>> uploadPhotos(
-            @Parameter(description = "照片文件数组") @RequestParam("files") MultipartFile[] files,
-            @Parameter(description = "用户ID") @RequestParam(value = "userId", defaultValue = "guest") String userId,
-            @Parameter(description = "照片描述") @RequestParam(value = "description", required = false) String description,
+            @ApiParam("照片文件数组") @RequestParam("files") MultipartFile[] files,
+            @ApiParam("用户ID") @RequestParam(value = "userId", defaultValue = "guest") String userId,
+            @ApiParam("照片描述") @RequestParam(value = "description", required = false) String description,
             HttpServletRequest request) {
         
         log.info("接收到批量上传请求: {} 个文件, 用户={}, IP={}", 
@@ -82,9 +82,9 @@ public class PhotoController {
      * 在线预览照片
      */
     @GetMapping("/view/{filename:.+}")
-    @Operation(summary = "在线预览照片", description = "通过文件名预览照片")
+    @ApiOperation(value = "在线预览照片", notes = "通过文件名预览照片")
     public ResponseEntity<byte[]> viewPhoto(
-            @Parameter(description = "文件名") @PathVariable String filename,
+            @ApiParam("文件名") @PathVariable String filename,
             HttpServletRequest request) {
         
         log.debug("预览照片: {}, IP={}", filename, SecurityUtils.getClientIpAddress(request));
@@ -120,9 +120,9 @@ public class PhotoController {
      * 查看缩略图
      */
     @GetMapping("/thumbnail/{filename:.+}")
-    @Operation(summary = "查看缩略图", description = "获取照片缩略图")
+    @ApiOperation(value = "查看缩略图", notes = "获取照片缩略图")
     public ResponseEntity<byte[]> viewThumbnail(
-            @Parameter(description = "文件名") @PathVariable String filename) {
+            @ApiParam("文件名") @PathVariable String filename) {
         
         log.debug("查看缩略图: {}", filename);
         
@@ -147,9 +147,9 @@ public class PhotoController {
      * 下载照片
      */
     @GetMapping("/download/{filename:.+}")
-    @Operation(summary = "下载照片", description = "下载原图文件")
+    @ApiOperation(value = "下载照片", notes = "下载原图文件")
     public ResponseEntity<byte[]> downloadPhoto(
-            @Parameter(description = "文件名") @PathVariable String filename,
+            @ApiParam("文件名") @PathVariable String filename,
             HttpServletRequest request) {
         
         log.info("下载照片: {}, IP={}", filename, SecurityUtils.getClientIpAddress(request));
@@ -182,9 +182,9 @@ public class PhotoController {
      * 断点续传下载
      */
     @GetMapping("/download/range/{filename:.+}")
-    @Operation(summary = "断点续传下载", description = "支持Range请求的文件下载")
+    @ApiOperation(value = "断点续传下载", notes = "支持Range请求的文件下载")
     public ResponseEntity<byte[]> downloadPhotoWithRange(
-            @Parameter(description = "文件名") @PathVariable String filename,
+            @ApiParam("文件名") @PathVariable String filename,
             @RequestHeader(value = "Range", required = false) String range,
             HttpServletRequest request) {
         
@@ -228,9 +228,9 @@ public class PhotoController {
      * 获取照片信息
      */
     @GetMapping("/{id}")
-    @Operation(summary = "获取照片信息", description = "根据ID获取照片详细信息")
+    @ApiOperation(value = "获取照片信息", notes = "根据ID获取照片详细信息")
     public ResponseEntity<ApiResponse<PhotoDTO>> getPhoto(
-            @Parameter(description = "照片ID") @PathVariable Long id) {
+            @ApiParam("照片ID") @PathVariable Long id) {
         
         PhotoDTO photo = photoService.getPhoto(id);
         return ResponseEntity.ok(ApiResponse.success(photo));
@@ -240,11 +240,11 @@ public class PhotoController {
      * 获取用户的照片列表
      */
     @GetMapping("/user/{userId}")
-    @Operation(summary = "获取用户照片列表", description = "分页查询用户上传的照片")
+    @ApiOperation(value = "获取用户照片列表", notes = "分页查询用户上传的照片")
     public ResponseEntity<ApiResponse<Page<PhotoDTO>>> getUserPhotos(
-            @Parameter(description = "用户ID") @PathVariable String userId,
-            @Parameter(description = "页码") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size) {
+            @ApiParam("用户ID") @PathVariable String userId,
+            @ApiParam("页码") @RequestParam(defaultValue = "0") int page,
+            @ApiParam("每页数量") @RequestParam(defaultValue = "20") int size) {
         
         Page<PhotoDTO> photos = photoService.getUserPhotos(userId, page, size);
         return ResponseEntity.ok(ApiResponse.success(photos));
@@ -254,10 +254,10 @@ public class PhotoController {
      * 获取公开照片列表
      */
     @GetMapping("/public")
-    @Operation(summary = "获取公开照片列表", description = "分页查询所有公开照片")
+    @ApiOperation(value = "获取公开照片列表", notes = "分页查询所有公开照片")
     public ResponseEntity<ApiResponse<Page<PhotoDTO>>> getPublicPhotos(
-            @Parameter(description = "页码") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size) {
+            @ApiParam("页码") @RequestParam(defaultValue = "0") int page,
+            @ApiParam("每页数量") @RequestParam(defaultValue = "20") int size) {
         
         Page<PhotoDTO> photos = photoService.getPublicPhotos(page, size);
         return ResponseEntity.ok(ApiResponse.success(photos));
@@ -267,11 +267,11 @@ public class PhotoController {
      * 搜索照片
      */
     @GetMapping("/search")
-    @Operation(summary = "搜索照片", description = "根据文件名关键词搜索照片")
+    @ApiOperation(value = "搜索照片", notes = "根据文件名关键词搜索照片")
     public ResponseEntity<ApiResponse<Page<PhotoDTO>>> searchPhotos(
-            @Parameter(description = "搜索关键词") @RequestParam String keyword,
-            @Parameter(description = "页码") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size) {
+            @ApiParam("搜索关键词") @RequestParam String keyword,
+            @ApiParam("页码") @RequestParam(defaultValue = "0") int page,
+            @ApiParam("每页数量") @RequestParam(defaultValue = "20") int size) {
         
         Page<PhotoDTO> photos = photoService.searchPhotos(keyword, page, size);
         return ResponseEntity.ok(ApiResponse.success(photos));
@@ -281,10 +281,10 @@ public class PhotoController {
      * 删除照片
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "删除照片", description = "软删除照片，不会立即删除文件")
+    @ApiOperation(value = "删除照片", notes = "软删除照片，不会立即删除文件")
     public ResponseEntity<ApiResponse<Void>> deletePhoto(
-            @Parameter(description = "照片ID") @PathVariable Long id,
-            @Parameter(description = "用户ID") @RequestParam String userId) {
+            @ApiParam("照片ID") @PathVariable Long id,
+            @ApiParam("用户ID") @RequestParam String userId) {
         
         photoService.deletePhoto(id, userId);
         return ResponseEntity.ok(ApiResponse.success("删除成功", null));
@@ -294,10 +294,10 @@ public class PhotoController {
      * 永久删除照片
      */
     @DeleteMapping("/{id}/permanent")
-    @Operation(summary = "永久删除照片", description = "物理删除照片及文件")
+    @ApiOperation(value = "永久删除照片", notes = "物理删除照片及文件")
     public ResponseEntity<ApiResponse<Void>> permanentlyDeletePhoto(
-            @Parameter(description = "照片ID") @PathVariable Long id,
-            @Parameter(description = "用户ID") @RequestParam String userId) {
+            @ApiParam("照片ID") @PathVariable Long id,
+            @ApiParam("用户ID") @RequestParam String userId) {
         
         photoService.permanentlyDeletePhoto(id, userId);
         return ResponseEntity.ok(ApiResponse.success("永久删除成功", null));
@@ -307,7 +307,7 @@ public class PhotoController {
      * 获取存储空间信息
      */
     @GetMapping("/storage/info")
-    @Operation(summary = "获取存储空间信息", description = "查询存储空间使用情况")
+    @ApiOperation(value = "获取存储空间信息", notes = "查询存储空间使用情况")
     public ResponseEntity<ApiResponse<StorageInfo>> getStorageInfo() {
         StorageInfo info = photoService.getStorageInfo();
         return ResponseEntity.ok(ApiResponse.success(info));

@@ -60,6 +60,11 @@ spring:
     mode: HTML
     encoding: UTF-8
     cache: false
+  
+  # 解决Springfox与Spring Boot 2.6+的兼容问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 # 文件存储配置
 file:

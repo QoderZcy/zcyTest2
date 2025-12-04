@@ -123,7 +123,7 @@ public class NoteService {
         }
         
         try {
-            var document = markdownParser.parse(markdown);
+            org.commonmark.node.Node document = markdownParser.parse(markdown);
             return htmlRenderer.render(document);
         } catch (Exception e) {
             log.error("Markdown渲染失败", e);
