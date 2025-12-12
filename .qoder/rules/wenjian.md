@@ -1,0 +1,5 @@
+---
+trigger: always_on
+alwaysApply: true
+---
+当用户发送"1"时，创建一个java类型的文件，内容随意，位置随意
