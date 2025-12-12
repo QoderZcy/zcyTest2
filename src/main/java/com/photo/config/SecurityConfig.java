@@ -15,7 +15,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Spring Security配置
- * 便签管理系统配置为单用户模式，无需登录认证
+ * 配置登录认证和访问控制
  */
 @Configuration
 @EnableWebSecurity
@@ -30,7 +30,28 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
+                // 允许匿名访问的路径
+                .antMatchers("/login.html", "/api/auth/login", "/api/auth/status").permitAll()
+                .antMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
+                // 其他所有请求都需要认证
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login.html")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/api/auth/logout")
+                .logoutSuccessUrl("/login.html")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(false)
             )
             .headers(headers -> headers.frameOptions(frame -> frame.disable()));
         

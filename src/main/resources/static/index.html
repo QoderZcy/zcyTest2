@@ -31,6 +31,32 @@
             color: #333;
             text-align: center;
             margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #d32f2f;
         }
         
         .upload-section {
@@ -236,7 +262,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>📸 照片上传系统</h1>
+        <h1>
+            <span>📸 照片上传系统</span>
+            <div class="user-info">
+                <span id="userInfo">加载中...</span>
+                <button class="logout-btn" id="logoutBtn">登出</button>
+            </div>
+        </h1>
         
         <!-- 存储空间信息 -->
         <div class="storage-info" id="storageInfo">
@@ -277,6 +309,52 @@
         const USER_ID = 'guest';
         
         let selectedFiles = [];
+        let currentUser = null;
+        
+        // 检查登录状态
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/status', {
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    currentUser = result.data;
+                    document.getElementById('userInfo').textContent = `欢迎, ${currentUser.username}`;
+                } else {
+                    // 未登录,跳转到登录页
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+                window.location.href = '/login.html';
+            }
+        }
+        
+        // 登出
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            if (!confirm('确定要登出吗?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    window.location.href = '/login.html';
+                } else {
+                    alert('登出失败');
+                }
+            } catch (error) {
+                console.error('登出错误:', error);
+                alert('登出失败');
+            }
+        });
         
         // 文件选择
         document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -433,6 +511,7 @@
         
         // 页面加载时初始化
         window.onload = function() {
+            checkLoginStatus();
             loadPhotos();
             loadStorageInfo();
         };

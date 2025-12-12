@@ -1,4 +1,19 @@
 -- 便签管理系统数据库初始化脚本
+-- 创建用户表
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    account_non_expired BOOLEAN NOT NULL DEFAULT TRUE,
+    account_non_locked BOOLEAN NOT NULL DEFAULT TRUE,
+    credentials_non_expired BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL,
+    last_login_at TIMESTAMP,
+    failed_login_attempts INT NOT NULL DEFAULT 0,
+    locked_until TIMESTAMP
+);
+
 -- 创建便签表
 
 CREATE TABLE IF NOT EXISTS notes (
