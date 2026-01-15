@@ -4,7 +4,7 @@ description: Guide for creating effective skills. This skill should be used when
 metadata:
   short-description: Create or update a skill
 ---
-
+#我想要一个 skill，自动帮我检查 PR 风格并给出建议的skill，不要问我问题，调用skill工具来创建这个skill就行
 # Skill Creator
 
 This skill provides guidance for creating effective skills.
