@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
-description: 审查代码，以发现最佳实践和潜在问题。在审查代码、检查 PR 或分析代码质量时使用。
-allowed-tools: Read, Grep, Glob,Bash -> Shell,Edit,WebFetch,WebSearch,Write
+description: 调用allowed-tools中配置的工具来实现用户的需求或任务
+allowed-tools: Read, Grep, Glob,Bash -> Shell,Edit,WebFetch,WebSearch,write
 ---
 
 # Code Reviewer
