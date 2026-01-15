@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anthropic 品牌样式示例</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Anthropic 品牌色彩 */
+        :root {
+            /* 主色调 */
+            --color-dark: #141413;
+            --color-light: #faf9f5;
+            --color-mid-gray: #b0aea5;
+            --color-light-gray: #e8e6dc;
+            
+            /* 强调色 */
+            --color-orange: #d97757;
+            --color-blue: #6a9bcc;
+            --color-green: #788c5d;
+            
+            /* 字体 */
+            --font-heading: 'Poppins', Arial, sans-serif;
+            --font-body: 'Lora', Georgia, serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-light);
+            color: var(--color-dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* 标题样式 - 使用 Poppins */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--color-dark);
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 {
+            font-size: 36px;
+            margin-top: 2rem;
+        }
+        
+        h3 {
+            font-size: 28px;
+            margin-top: 1.5rem;
+        }
+        
+        /* 正文样式 - 使用 Lora */
+        p {
+            font-family: var(--font-body);
+            font-size: 18px;
+            margin-bottom: 1rem;
+            color: var(--color-dark);
+        }
+        
+        /* 顶部横幅 */
+        .hero {
+            background-color: var(--color-dark);
+            color: var(--color-light);
+            padding: 60px 40px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            color: var(--color-light);
+        }
+        
+        .hero p {
+            color: var(--color-light);
+            font-size: 20px;
+        }
+        
+        /* 卡片容器 */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(20, 20, 19, 0.1);
+            border-left: 4px solid var(--color-orange);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:nth-child(2) {
+            border-left-color: var(--color-blue);
+        }
+        
+        .card:nth-child(3) {
+            border-left-color: var(--color-green);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(20, 20, 19, 0.15);
+        }
+        
+        .card h3 {
+            margin-top: 0;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            font-family: var(--font-heading);
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--color-orange);
+            color: var(--color-light);
+        }
+        
+        .btn-primary:hover {
+            background-color: #c56647;
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background-color: var(--color-blue);
+            color: var(--color-light);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a8bbc;
+            transform: scale(1.05);
+        }
+        
+        .btn-tertiary {
+            background-color: var(--color-green);
+            color: var(--color-light);
+        }
+        
+        .btn-tertiary:hover {
+            background-color: #687c4d;
+            transform: scale(1.05);
+        }
+        
+        /* 特性展示区 */
+        .features {
+            background-color: var(--color-light-gray);
+            padding: 40px;
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            font-family: var(--font-body);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--color-mid-gray);
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list li::before {
+            content: "✓";
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: var(--color-green);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        /* 代码块样式 */
+        .code-block {
+            background-color: var(--color-dark);
+            color: var(--color-light);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .color-palette {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .color-swatch {
+            text-align: center;
+        }
+        
+        .color-box {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-name {
+            font-family: var(--font-heading);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .color-code {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--color-mid-gray);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Anthropic 品牌样式指南</h1>
+            <p>这是一个展示 Anthropic 官方品牌色彩和排版系统的完整示例页面</p>
+        </div>
+        
+        <!-- Typography Section -->
+        <section>
+            <h2>排版系统</h2>
+            <p>我们使用 <strong>Poppins</strong> 字体作为标题，使用 <strong>Lora</strong> 字体作为正文，确保视觉层次清晰且易于阅读。</p>
+            
+            <h3>标题示例</h3>
+            <p>所有标题（24pt 及以上）使用 Poppins 字体，具有现代感和专业性。如果系统未安装该字体，将自动回退到 Arial。</p>
+        </section>
+        
+        <!-- Color Palette -->
+        <section>
+            <h2>品牌色彩</h2>
+            <p>Anthropic 的色彩系统包括主色调和强调色，精心设计以保持品牌一致性。</p>
+            
+            <h3>主色调</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background-color: #141413;"></div>
+                    <div class="color-name">深色</div>
+                    <div class="color-code">#141413</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background-color: #faf9f5; border: 1px solid #e8e6dc;"></div>
+                    <div class="color-name">浅色</div>
+                    <div class="color-code">#faf9f5</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background-color: #b0aea5;"></div>
+                    <div class="color-name">中灰</div>
+                    <div class="color-code">#b0aea5</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background-color: #e8e6dc;"></div>
+                    <div class="color-name">浅灰</div>
+                    <div class="color-code">#e8e6dc</div>
+                </div>
+            </div>
+            
+            <h3>强调色</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background-color: #d97757;"></div>
+                    <div class="color-name">橙色</div>
+                    <div class="color-code">#d97757</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background-color: #6a9bcc;"></div>
+                    <div class="color-name">蓝色</div>
+                    <div class="color-code">#6a9bcc</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background-color: #788c5d;"></div>
+                    <div class="color-name">绿色</div>
+                    <div class="color-code">#788c5d</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Cards Section -->
+        <section>
+            <h2>卡片组件示例</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>智能字体应用</h3>
+                    <p>自动为标题和正文应用合适的字体系统，保持排版一致性和可读性。</p>
+                    <button class="btn btn-primary">了解更多</button>
+                </div>
+                <div class="card">
+                    <h3>颜色系统</h3>
+                    <p>使用精确的 RGB 颜色值确保品牌色彩在不同系统中的保真度。</p>
+                    <button class="btn btn-secondary">查看详情</button>
+                </div>
+                <div class="card">
+                    <h3>响应式设计</h3>
+                    <p>所有组件都经过优化，在各种屏幕尺寸上都能完美呈现。</p>
+                    <button class="btn btn-tertiary">开始使用</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="features">
+            <h2>核心特性</h2>
+            <ul class="feature-list">
+                <li>Poppins 字体用于标题（24pt 及以上）</li>
+                <li>Lora 字体用于正文内容</li>
+                <li>自动字体回退机制（Arial/Georgia）</li>
+                <li>精确的品牌色彩匹配</li>
+                <li>智能背景色选择</li>
+                <li>循环使用强调色增强视觉效果</li>
+            </ul>
+        </section>
+        
+        <!-- Code Example -->
+        <section>
+            <h2>CSS 变量使用示例</h2>
+            <p>通过 CSS 变量轻松应用品牌色彩：</p>
+            <div class="code-block">
+:root {
+    /* 主色调 */
+    --color-dark: #141413;
+    --color-light: #faf9f5;
+    --color-mid-gray: #b0aea5;
+    --color-light-gray: #e8e6dc;
+    
+    /* 强调色 */
+    --color-orange: #d97757;
+    --color-blue: #6a9bcc;
+    --color-green: #788c5d;
+    
+    /* 字体 */
+    --font-heading: 'Poppins', Arial, sans-serif;
+    --font-body: 'Lora', Georgia, serif;
+}
+            </div>
+        </section>
+        
+        <!-- Button Examples -->
+        <section>
+            <h2>按钮样式</h2>
+            <p>使用品牌强调色创建具有吸引力的交互元素：</p>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
+                <button class="btn btn-primary">主要按钮</button>
+                <button class="btn btn-secondary">次要按钮</button>
+                <button class="btn btn-tertiary">第三按钮</button>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
