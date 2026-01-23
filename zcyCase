@@ -1,0 +1,102 @@
+PlanAgent+BrowserAgent混用：
+
+  PlanAgent模式实现一个完整的文件上传下载网页应用，browserAgent模式对该页面进行以下三项功能测试：
+1. 文件上传测试：使用browser-use_upload_file工具测试页面的文件上传功能，确保能够成功选择并上传文件
+2. 拖拽功能测试：在页面中实现拖拽区域，使用use_drag工具测试文件或元素的拖拽操作功能
+3. 对话框处理测试：在页面交互过程中触发至少一个浏览器对话框（如确认框、提示框等），使用handle_dialog工具处理对话框的显示和用户交互
+要求：
+- 页面应包含直观的用户界面，支持文件选择、上传、下载等基本操作
+- 确保所有三个测试用例都能在browserAgent环境中正常执行
+- 页面应具备基本的错误处理和用户反馈机制
+- 测试过程中应验证各项功能的正确性和响应性
+
+BrowserAgnet：
+
+  请按照以下步骤执行浏览器操作测试：
+1、使用navigate_page导航到 https://www.baidu.com
+2、使用new_page打开一个新页面 https://news.baidu.com
+3、使用list_page查看当前打开的全部页面
+4、使用select_page选择索引为0的百度搜索页面
+5、使用click工具点击百度搜索页面上的"百度一下"搜索按钮
+6、使用hover工具悬停在搜索框下面的任意按钮上实现一个工具执行示例
+7、使用fill工具在搜索框中输入文本'Qoder官网'
+8、使用press_key工具在输入框中按下删除键（Backspace），反复删除直到清空刚才输入的'Qoder官网'内容
+9、使用take_screenshot截图并保存当前百度页面，记录截图路径
+11、使用take_snapshot保存当前百度页面的快照
+12、在搜索框中使用fill工具输入'Qoder是什么'，然后使用press_key工具按下Enter键进行搜索，之后使用wait_for工具等待5秒
+13、等待完成后使用list_console_messages工具获取页面加载过程中的控制台日志
+14、使用list_network_requests工具获取网络请求相关的控制台输出
+15、使用evaluate_script工具将当前页面滚动到最底部
+重要提示：
+1、每一步操作请确认执行成功后再进行下一步
+2、如果某个元素不容易定位，请使用合适的选择器（如文本内容、aria-label等）
+3、截图保存后请返回截图文件的完整路径
+4、完成所有步骤后，请返回详细的执行结果报告，包括：每个步骤的执行状态、截图文件路径、控制台日志的条数和主要内容摘要、网络请求的数量和主要请求摘要、最终页面状态
+5、如果上下文token限制导致不能一次性执行全部case，请分批次执行
+请开始执行测试。
+
+PlanAgent：
+
+  PlanAgent模式实现一个完整的文件上传下载网页应用
+
+
+工具调用大全：
+
+  完成如下工具调用：
+1. 完成多个search_codebase工具调用示例
+2. 完成多个search_file工具调用示例
+3. 完成多个grep_code工具调用示例
+4. 完成多个search_teamdocs工具调用示例
+5. 完成多个search_web工具调用示例
+6. 完成多个fetch_content工具调用示例
+7. 完成多个list_dir工具调用示例
+8. 完成一个fetch_rules工具调用示例
+9. 完成一个update_memory工具调用示例
+10. 完成一个search_memory工具调用示例
+11. 完成一个get_problems工具调用示例
+12. 完成一个create_file工具调用示例
+13. 完成一个delete_file工具调用示例
+14. 完成一个edit_file工具调用示例
+15. 完成一个read_file工具调用示例
+16. 完成一个终端执行后台命令示例，并调用get_terminal_output查看下命令输出的内容
+17. 完成一个终端执行非后台命令调用示例
+18. 调用mcp中的任意工具完成一个mcp工具使用示例
+19. 调用 fetch_content 获取一下sadasdasd.com网址的内容
+20. 调用read file查看asdasd.java文件，强制使用工具查看，不要检查文件是否存在
+21. 调用list dir查看asdasd目录，强制使用工具查看，不要检查目录是否存在
+ 以上任务使用todo工具来执行对话。
+
+ 自定义Agent调用：
+
+1、
+  调用projectAgent.md中配置的defineMyself自定义agent，完成如下工具调用示例： 
+1. 完成多个search_codebase工具调用示例 
+2. 完成多个search_file工具调用示例 
+3. 完成多个grep_code工具调用示例 
+4. 完成多个search_teamdocs工具调用示例 
+5. 完成多个search_web工具调用示例 
+6. 完成多个fetch_content工具调用示例 
+7. 完成多个list_dir工具调用示例 
+8. 完成一个fetch_rules工具调用示例 
+9. 完成一个update_memory工具调用示例 
+10. 完成一个search_memory工具调用示例 
+11. 完成一个get_problems工具调用示例 
+12. 完成一个create_file工具调用示例 
+13. 完成一个delete_file工具调用示例 
+14. 完成一个edit_file工具调用示例 
+15. 完成一个read_file工具调用示例 
+16. 完成一个终端执行后台命令示例，并调用get_terminal_output查看下命令输出的内容 
+17. 完成一个终端执行非后台命令调用示例 
+18. 调用mcp中的任意工具完成一个mcp工具使用示例 
+19. 调用 fetch_content 获取一下sadasdasd.com网址的内容 
+20. 调用read file查看asdasd.java文件，强制使用工具查看，不要检查文件是否存在
+21. 调用list dir查看asdasd目录，强制使用工具查看，不要检查目录是否存在
+
+
+2、
+  调用userSubAgent.md中配置的defineMyself自定义agent，网络查询最近热门话题，userSubAgent.md在我的issuer/.qoder/agents目录下
+
+
+Skill工具调用：
+
+  使用skill工具来调用spreadsheet处理能力，读取特殊符号用例.xlsx文件的内容
