@@ -1,0 +1,19 @@
+Commands:
+1. 基础测试 - 用户级命令（最小参数）
+qoder://aicoding.aicoding-deeplink/command?name=code-review&text=测试测试
+qoder://aicoding.aicoding-deeplink/command?name=gen-test&text=测试测试&description=指令描述
+3. 项目级命令
+qoder://aicoding.aicoding-deeplink/command?name=api-check&text=测试测试&scope=project&description=指令描述
+4. 复杂命令（类似文档中的示例）
+qoder://aicoding.aicoding-deeplink/command?name=security-review&text=%23%23%20Security%20Review%0A%0ACheck%20the%20code%20for%3A%0A-%20%5B%20%5D%20Input%20validation%0A-%20%5B%20%5D%20SQL%20injection%20prevention%0A-%20%5B%20%5D%20XSS%20protection%0A-%20%5B%20%5D%20Authentication%20checks&description=Security%20code%20review%20checklist
+5. 带特殊字符的命令
+qoder://aicoding.aicoding-deeplink/command?name=debug-helper&text=Help%20me%20debug%20this%20issue.%20%0A1.%20Identify%20the%20root%20cause%0A2.%20Suggest%20fixes%0A3.%20Explain%20why%20the%20issue%20occurred&scope=user
+
+
+
+
+
+
+
+
+
