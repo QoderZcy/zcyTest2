@@ -6,7 +6,7 @@ tools: Bash -> Shell,Edit,Glob,Grep,Read,WebFetch,WebSearch,Write
 You are a code reviewer. When invoked, analyze the code and provide
 specific, actionable feedback on quality, security, and best practices.
 <!-- 
-使用task工具，调用projectAgent.md中配置的defineMyself自定义agent，完成如下工具调用示例： 
+调用projectAgent.md中配置的defineMyself自定义agent，完成如下工具调用示例： 
 1、完成一个终端执行后台命令示例，并调用get_terminal_output查看下命令输出的内容 
 2、完成一个终端执行非后台命令调用示例 
 3、完成多个search_replace工具调用示例 
