@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客系统 - 赛博朋克风格</title>
+    <link rel="stylesheet" th:href="@{/css/cyberpunk.css}">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <h1 class="logo">
+                <span class="glitch" data-text="BLOG">BLOG</span>
+                <span class="subtitle">// 博客管理系统</span>
+            </h1>
+            <div>
+                <a th:href="@{/}" class="btn btn-secondary" style="margin-right: 10px;">
+                    <span>便签系统</span>
+                </a>
+                <a th:href="@{/blogs/new}" class="btn btn-primary">
+                    <span>+ 新建博客</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- 消息提示 -->
+        <div th:if="${message}" class="message message-success">
+            <span th:text="${message}"></span>
+        </div>
+        <div th:if="${error}" class="message message-error">
+            <span th:text="${error}"></span>
+        </div>
+        
+        <!-- 筛选提示 -->
+        <div th:if="${filterType}" class="filter-info">
+            <span th:text="'当前筛选: ' + ${filterType} + ' = ' + ${filterValue}"></span>
+            <a th:href="@{/blogs}" class="btn-link">清除筛选</a>
+        </div>
+
+        <!-- 博客卡片网格 -->
+        <div class="notes-grid" th:if="${blogs != null && !blogs.isEmpty()}">
+            <div class="note-card" th:each="blog : ${blogs}">
+                <div class="card-header">
+                    <h3 class="note-title" th:text="${blog.title}">博客标题</h3>
+                    <form th:action="@{/blogs/{id}/delete(id=${blog.id})}" method="post" 
+                          onsubmit="return confirm('确定要删除这篇博客吗？');">
+                        <button type="submit" class="btn-delete" title="删除">×</button>
+                    </form>
+                </div>
+                <div class="card-body" th:onclick="'window.location.href=\'/blogs/' + ${blog.id} + '\''">
+                    <div class="blog-meta">
+                        <span class="meta-item" th:if="${blog.author}">
+                            <strong>作者:</strong> 
+                            <a th:href="@{/blogs(author=${blog.author})}" 
+                               th:text="${blog.author}"
+                               onclick="event.stopPropagation();">作者名</a>
+                        </span>
+                        <span class="meta-item" th:if="${blog.category}">
+                            <strong>分类:</strong> 
+                            <a th:href="@{/blogs(category=${blog.category})}" 
+                               th:text="${blog.category}"
+                               onclick="event.stopPropagation();">分类名</a>
+                        </span>
+                    </div>
+                    <p class="note-preview" th:text="${blog.contentPreview}">内容预览...</p>
+                    <div class="card-footer">
+                        <span class="timestamp" th:text="${blog.createdTime}">2025-01-29 12:00:00</span>
+                        <span class="tags" th:if="${blog.tags}">
+                            <span th:each="tag, iterStat : ${blog.tags.split(',')}" 
+                                  class="tag" 
+                                  th:text="${tag.trim()}">标签</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 空状态 -->
+        <div class="empty-state" th:if="${blogs == null || blogs.isEmpty()}">
+            <div class="empty-icon">📝</div>
+            <h2>暂无博客</h2>
+            <p>点击右上角的"新建博客"按钮创建您的第一篇博客</p>
+            <a th:href="@{/blogs/new}" class="btn btn-primary">
+                <span>开始创建</span>
+            </a>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    
+    <style>
+        .filter-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--color-primary);
+            border-radius: 6px;
+            color: var(--color-primary);
+        }
+        
+        .btn-link {
+            margin-left: 15px;
+            color: var(--color-secondary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--color-secondary);
+        }
+        
+        .btn-link:hover {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+        
+        .blog-meta {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .meta-item a {
+            color: var(--color-primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--color-primary);
+        }
+        
+        .meta-item a:hover {
+            color: var(--color-secondary);
+            border-bottom-color: var(--color-secondary);
+        }
+        
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            padding: 4px 10px;
+            background: rgba(191, 0, 255, 0.2);
+            color: var(--color-secondary);
+            border: 1px solid var(--color-secondary);
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        
+        .header > div {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</body>
+</html>

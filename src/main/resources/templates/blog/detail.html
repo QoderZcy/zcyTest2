@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${blog.title} + ' - 博客详情'">博客详情</title>
+    <link rel="stylesheet" th:href="@{/css/cyberpunk.css}">
+</head>
+<body>
+    <div class="container">
+        <!-- 操作栏 -->
+        <div class="action-bar">
+            <a th:href="@{/blogs}" class="btn btn-secondary">
+                <span>← 返回列表</span>
+            </a>
+            <div class="action-buttons">
+                <a th:href="@{/blogs/{id}/edit(id=${blog.id})}" class="btn btn-primary">
+                    <span>编辑</span>
+                </a>
+                <form th:action="@{/blogs/{id}/delete(id=${blog.id})}" method="post" style="display: inline;"
+                      onsubmit="return confirm('确定要删除这篇博客吗？此操作不可恢复。');">
+                    <button type="submit" class="btn btn-danger">删除</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 消息提示 -->
+        <div th:if="${message}" class="message message-success">
+            <span th:text="${message}"></span>
+        </div>
+
+        <!-- 博客详情卡片 -->
+        <div class="detail-card">
+            <!-- 博客标题 -->
+            <h1 class="detail-title" th:text="${blog.title}">博客标题</h1>
+            
+            <!-- 博客元信息 -->
+            <div class="blog-info-meta">
+                <div class="info-row">
+                    <span class="info-label">作者:</span>
+                    <span class="info-value">
+                        <a th:href="@{/blogs(author=${blog.author})}" 
+                           th:text="${blog.author}">作者名</a>
+                    </span>
+                </div>
+                <div class="info-row" th:if="${blog.category}">
+                    <span class="info-label">分类:</span>
+                    <span class="info-value">
+                        <a th:href="@{/blogs(category=${blog.category})}" 
+                           th:text="${blog.category}">分类名</a>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">创建时间:</span>
+                    <span class="info-value" th:text="${blog.createdTime}">2025-01-29 12:00:00</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">修改时间:</span>
+                    <span class="info-value" th:text="${blog.updatedTime}">2025-01-29 12:00:00</span>
+                </div>
+                <div class="info-row" th:if="${blog.tags}">
+                    <span class="info-label">标签:</span>
+                    <span class="blog-tags">
+                        <span th:each="tag : ${blog.tags.split(',')}" 
+                              class="blog-tag" 
+                              th:text="${tag.trim()}">标签</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 分隔线 -->
+            <div class="divider"></div>
+
+            <!-- 博客内容 -->
+            <div class="detail-content markdown-body" th:utext="${blog.htmlContent}">
+                <p>博客内容将在这里显示...</p>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    
+    <style>
+        .blog-info-meta {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(26, 31, 58, 0.5);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .info-row {
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: var(--color-primary);
+            min-width: 80px;
+        }
+        
+        .info-value {
+            color: var(--text-primary);
+        }
+        
+        .info-value a {
+            color: var(--color-secondary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--color-secondary);
+        }
+        
+        .info-value a:hover {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+            text-shadow: var(--glow-primary);
+        }
+        
+        .blog-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .blog-tag {
+            padding: 6px 14px;
+            background: rgba(191, 0, 255, 0.2);
+            color: var(--color-secondary);
+            border: 1px solid var(--color-secondary);
+            border-radius: 16px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .blog-tag:hover {
+            background: rgba(191, 0, 255, 0.3);
+            box-shadow: 0 0 10px rgba(191, 0, 255, 0.5);
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, 
+                transparent, 
+                var(--color-primary), 
+                transparent);
+            margin: 30px 0;
+        }
+    </style>
+</body>
+</html>

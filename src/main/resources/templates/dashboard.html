@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表板 - 照片上传系统</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../static/css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .card p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-section h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .welcome-section p {
+            color: #666;
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📸 照片上传系统</h1>
+        <p>欢迎来到您的个人空间</p>
+    </div>
+    
+    <div class="container">
+        <div class="welcome-section">
+            <h2>欢迎回来！</h2>
+            <p>这里是您的个人仪表板，您可以管理照片、博客和便签。</p>
+        </div>
+        
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-icon">🖼️</div>
+                <h3>照片管理</h3>
+                <p>上传、浏览和管理您的照片</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">✍️</div>
+                <h3>博客系统</h3>
+                <p>创建和管理您的博客文章</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">📝</div>
+                <h3>便签系统</h3>
+                <p>快速记录您的想法和提醒</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">👤</div>
+                <h3>用户中心</h3>
+                <p>管理您的个人信息和设置</p>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="/photos" class="btn">管理照片</a>
+            <a href="/blogs" class="btn">查看博客</a>
+            <a href="/notes" class="btn">查看便签</a>
+            <a href="/auth/logout" class="btn" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">退出登录</a>
+        </div>
+    </div>
+</body>
+</html>

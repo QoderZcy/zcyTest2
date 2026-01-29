@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isNew ? '新建博客' : '编辑博客'}">编辑博客</title>
+    <link rel="stylesheet" th:href="@{/css/cyberpunk.css}">
+</head>
+<body>
+    <div class="container">
+        <!-- 操作栏 -->
+        <div class="action-bar">
+            <a th:href="@{/blogs}" class="btn btn-secondary">
+                <span>← 返回列表</span>
+            </a>
+            <h2 class="page-title" th:text="${isNew ? '新建博客' : '编辑博客'}">编辑博客</h2>
+        </div>
+
+        <!-- 消息提示 -->
+        <div th:if="${error}" class="message message-error">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- 编辑表单 -->
+        <form th:action="${isNew ? '/blogs' : '/blogs/' + blog.id}" 
+              method="post" 
+              class="edit-form"
+              onsubmit="return validateForm()">
+            
+            <!-- 标题输入 -->
+            <div class="form-group">
+                <label for="title" class="form-label">博客标题 *</label>
+                <input type="text" 
+                       id="title" 
+                       name="title" 
+                       class="form-input" 
+                       placeholder="输入博客标题..."
+                       th:value="${blog?.title}"
+                       required>
+            </div>
+
+            <!-- 作者输入 -->
+            <div class="form-group">
+                <label for="author" class="form-label">作者 *</label>
+                <input type="text" 
+                       id="author" 
+                       name="author" 
+                       class="form-input" 
+                       placeholder="输入作者名称..."
+                       th:value="${blog?.author}"
+                       required>
+            </div>
+
+            <!-- 分类和标签 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category" class="form-label">分类</label>
+                    <input type="text" 
+                           id="category" 
+                           name="category" 
+                           class="form-input" 
+                           placeholder="如: 技术、生活、随笔..."
+                           th:value="${blog?.category}">
+                </div>
+                <div class="form-group">
+                    <label for="tags" class="form-label">标签</label>
+                    <input type="text" 
+                           id="tags" 
+                           name="tags" 
+                           class="form-input" 
+                           placeholder="多个标签用逗号分隔，如: Java,Spring,技术"
+                           th:value="${blog?.tags}">
+                </div>
+            </div>
+
+            <!-- 内容编辑区 -->
+            <div class="editor-container">
+                <!-- 左侧编辑区 -->
+                <div class="editor-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">编辑内容</span>
+                        <span class="editor-hint">支持 Markdown 语法</span>
+                    </div>
+                    <textarea id="content" 
+                              name="content" 
+                              class="content-editor" 
+                              placeholder="在这里输入博客内容，支持Markdown格式..."
+                              th:text="${blog?.content}"></textarea>
+                </div>
+
+                <!-- 右侧预览区 -->
+                <div class="preview-panel">
+                    <div class="panel-header">
+                        <span class="preview-title">实时预览</span>
+                        <span class="preview-indicator">●</span>
+                    </div>
+                    <div id="preview" class="preview-content markdown-body">
+                        <p class="preview-placeholder">开始输入内容以查看预览...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 按钮组 -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-large">
+                    <span th:text="${isNew ? '创建博客' : '保存修改'}">保存</span>
+                </button>
+                <a th:href="@{/blogs}" class="btn btn-secondary btn-large">
+                    <span>取消</span>
+                </a>
+            </div>
+        </form>
+
+        <!-- 快捷键提示 -->
+        <div class="shortcuts-hint">
+            <span>快捷键: <kbd>Ctrl</kbd> + <kbd>S</kbd> 保存 | <kbd>Ctrl</kbd> + <kbd>Esc</kbd> 取消</span>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/editor.js}"></script>
+    
+    <script>
+        function validateForm() {
+            const title = document.getElementById('title').value.trim();
+            const author = document.getElementById('author').value.trim();
+            const content = document.getElementById('content').value.trim();
+            
+            if (!title) {
+                alert('请输入博客标题');
+                return false;
+            }
+            
+            if (!author) {
+                alert('请输入作者名称');
+                return false;
+            }
+            
+            if (!content) {
+                if (!confirm('博客内容为空，确定要保存吗？')) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+    </script>
+    
+    <style>
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .editor-hint {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
