@@ -50,4 +50,17 @@ public class CacheConfig {
             .expireAfterWrite(60, TimeUnit.MINUTES)
             .recordStats();
     }
+    
+    /**
+     * 登录尝试缓存配置
+     * 用于防暴力破解：记录失败次数，30分钟后自动过期（解锁）
+     */
+    @Bean
+    public com.github.benmanes.caffeine.cache.Cache<String, Integer> loginAttemptCache() {
+        return Caffeine.newBuilder()
+            .maximumSize(10000)
+            .expireAfterWrite(30, TimeUnit.MINUTES)
+            .recordStats()
+            .build();
+    }
 }

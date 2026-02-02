@@ -59,4 +59,11 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> error(Integer code, String message) {
         return new ApiResponse<>(code, message, null, System.currentTimeMillis());
     }
+    
+    /**
+     * 失败响应(带错误码和数据)
+     */
+    public static <T> ApiResponse<T> error(Integer code, String message, T data) {
+        return new ApiResponse<>(code, message, data, System.currentTimeMillis());
+    }
 }

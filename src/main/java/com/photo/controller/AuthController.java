@@ -2,6 +2,7 @@ package com.photo.controller;
 
 import com.photo.dto.ApiResponse;
 import com.photo.service.CustomUserDetailsService;
+import com.photo.service.LoginAttemptService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class AuthController {
     @Autowired
     private SecurityContextRepository securityContextRepository;
     
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+    
     /**
      * 显示登录页面
      */
@@ -46,11 +50,21 @@ public class AuthController {
      */
     @PostMapping("/login")
     @ResponseBody
-    public ApiResponse<Map<String, String>> login(
+    public ApiResponse<Map<String, Object>> login(
             @RequestParam String username, 
             @RequestParam String password,
             HttpServletRequest request,
             HttpServletResponse response) {
+        String ip = getClientIP(request);
+        
+        // 检查是否被锁定
+        if (loginAttemptService.isBlocked(username, ip)) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("locked", true);
+            data.put("remainingAttempts", 0);
+            return ApiResponse.error(429, "账户已被锁定30分钟，请稍后再试", data);
+        }
+        
         try {
             // 创建认证令牌
             UsernamePasswordAuthenticationToken authToken = 
@@ -68,15 +82,46 @@ public class AuthController {
             // 更新最后登录时间
             userDetailsService.updateLastLogin(username);
             
-            Map<String, String> result = new HashMap<>();
+            // 登录成功，重置失败计数器
+            loginAttemptService.resetFailedAttempts(username, ip);
+            
+            Map<String, Object> result = new HashMap<>();
             result.put("message", "登录成功");
             result.put("username", username);
             result.put("redirectUrl", "/");
             
             return ApiResponse.success(result);
         } catch (Exception e) {
-            return ApiResponse.error(401, "用户名或密码错误");
+            // 记录登录失败
+            loginAttemptService.incrementFailedAttempts(username, ip);
+            int remaining = loginAttemptService.getRemainingAttempts(username, ip);
+            
+            Map<String, Object> data = new HashMap<>();
+            data.put("locked", remaining == 0);
+            data.put("remainingAttempts", remaining);
+            
+            if (remaining == 0) {
+                return ApiResponse.error(429, "账户已被锁定30分钟，请稍后再试", data);
+            }
+            return ApiResponse.error(401, "用户名或密码错误，剩余" + remaining + "次尝试机会", data);
         }
+    }
+    
+    /**
+     * 获取客户端真实IP地址
+     */
+    private String getClientIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
     }
     
     /**

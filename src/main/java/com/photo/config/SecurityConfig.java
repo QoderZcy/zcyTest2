@@ -1,6 +1,9 @@
 package com.photo.config;
 
+import com.photo.security.CustomAuthenticationFailureHandler;
+import com.photo.security.LoginAttemptFilter;
 import com.photo.service.CustomUserDetailsService;
+import com.photo.service.LoginAttemptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
@@ -33,18 +37,23 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService userDetailsService;
     
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .addFilterBefore(loginAttemptFilter(), UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/blog/public/**", "/", "/dashboard").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/auth/login")
-                .defaultSuccessUrl("/dashboard", true)  // 登录成功后跳转到仪表板
+                .failureHandler(authenticationFailureHandler())
+                .defaultSuccessUrl("/dashboard", true)
                 .permitAll()
             )
             .logout(logout -> logout
@@ -55,6 +64,16 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.disable()));
         
         return http.build();
+    }
+    
+    @Bean
+    public LoginAttemptFilter loginAttemptFilter() {
+        return new LoginAttemptFilter(loginAttemptService);
+    }
+    
+    @Bean
+    public CustomAuthenticationFailureHandler authenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler(loginAttemptService);
     }
     
     @Bean
