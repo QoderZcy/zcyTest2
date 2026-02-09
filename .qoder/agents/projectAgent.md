@@ -1,5 +1,5 @@
 ---
-name: defineMyself
+name: projectDefineMyselfprojectDefineMyselfprojectDefineMyselfprojectDefineMyselfprojectDefineMyselfprojectDefineMyself
 description: Reviews code for quality and best practices
 tools: Bash,Edit,Glob,Grep,Read,WebFetch,WebSearch,Write
 ---
