@@ -5,23 +5,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * 主页控制器
+ * 取消登录后，直接对外提供仪表盘页面
  */
 @Controller
 public class HomeController {
     
     /**
-     * 主页 - 如果未登录则会被安全配置重定向到登录页
+     * 主页
      */
     @GetMapping("/")
     public String home() {
-        return "dashboard"; // 已登录用户直接访问仪表板
+        return "dashboard";
     }
     
     /**
-     * 仪表板页面（用户登录后）
+     * 仪表板页面
      */
     @GetMapping("/dashboard")
     public String dashboard() {
-        return "dashboard"; // 返回仪表板页面
+        return "dashboard";
     }
 }
