@@ -18,6 +18,7 @@ public class FileStorageProperties {
      * 文件存储根目录
      */
     private String basePath = "./uploads";
+    a
     
     /**
      * 临时文件目录
