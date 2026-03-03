@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "bing-cn-mcp-server": {
+      "type": "sse",
+      "url": "https://mcp.api-inference.modelscope.net/35fce055714d44/sse"
+    },
+    "fetch": {
+      "type": "streamable_http",
+      "url": "https://mcp.api-inference.modelscope.net/5f3fe2ae9deb48/mcp"
+    },
+    "everything": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-everything"
+      ],
+      "command": "npx"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    }
+  }
+}
