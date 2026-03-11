@@ -36,3 +36,6 @@ data/
 # 忽略测试覆盖率报告
 coverage/
 *.lcov
+
+# 忽略 nul 文件（Windows 保留设备名）
+nul
