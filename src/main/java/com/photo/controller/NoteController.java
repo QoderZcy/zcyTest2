@@ -24,9 +24,9 @@ public class NoteController {
     
     /**
      * 便签列表首页
-     * GET /
+     * GET /notes
      */
-    @GetMapping("/")
+    @GetMapping("/notes")
     public String listNotes(Model model) {
         log.info("访问便签列表页面");
         List<NoteDTO> notes = noteService.getAllNotes();

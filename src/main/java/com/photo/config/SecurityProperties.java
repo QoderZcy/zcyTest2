@@ -34,21 +34,6 @@ public class SecurityProperties {
         private Boolean enabled = true;
         private List<String> allowedDomains;
     }
-    @Data
-    public static class RefererConfig {
-        private Boolean enabled = true;
-        private List<String> allowedDomains;
-    }
-    @Data
-    public static class RefererConfig {
-        private Boolean enabled = true;
-        private List<String> allowedDomains;
-    }
-    @Data
-    public static class RefererConfig {
-        private Boolean enabled = true;
-        private List<String> allowedDomains;
-    }
     
     @Data
     public static class TokenConfig {
