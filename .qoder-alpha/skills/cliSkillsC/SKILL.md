@@ -1,5 +1,5 @@
 ---
-name: pr-style-reviewer
+name: cliSkillsC
 description: "Automatically review PR/commit style and provide suggestions. Checks commit message conventions (conventional commits, length, format), PR descriptions, code formatting standards, and best practices. Use when reviewing pull requests, checking commit history, evaluating code quality, or when user asks to review PR style, check commits, or analyze code changes."
 ---
 
