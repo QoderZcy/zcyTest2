@@ -1,0 +1,9 @@
+{
+  "commands": [
+    {
+      "name": "pr-style-reviewer",
+      "description": "Review PR/commit style and provide actionable suggestions",
+      "command": "python3 .qoder-alpha/skills/pr-style-reviewer/scripts/pr_review.py --repo . --commits 5 --details"
+    }
+  ]
+}

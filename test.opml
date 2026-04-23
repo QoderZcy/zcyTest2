@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>测试思维导图</title>
+  </head>
+  <body>
+    <outline text="项目计划" _note="这是项目的主要计划">
+      <outline text="需求分析">
+        <outline text="用户调研"/>
+        <outline text="功能列表"/>
+      </outline>
+      <outline text="设计阶段">
+        <outline text="UI设计"/>
+        <outline text="架构设计"/>
+      </outline>
+      <outline text="开发阶段">
+        <outline text="前端开发"/>
+        <outline text="后端开发"/>
+      </outline>
+      <outline text="测试阶段">
+        <outline text="单元测试"/>
+        <outline text="集成测试"/>
+      </outline>
+    </outline>
+  </body>
+</opml>
