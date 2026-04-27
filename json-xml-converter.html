@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON / XML 转换器</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: #16213e;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #0f3460;
+  }
+
+  header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #e94560;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 6px 14px;
+    border: 1px solid #0f3460;
+    border-radius: 6px;
+    background: #16213e;
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .btn:hover { background: #0f3460; }
+  .btn.primary { background: #e94560; border-color: #e94560; color: #fff; }
+  .btn.primary:hover { background: #c73652; }
+
+  .main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .panel-header {
+    background: #16213e;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #0f3460;
+  }
+
+  .panel-header .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #a0a0c0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .panel-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .panel-actions .btn { font-size: 12px; padding: 4px 10px; }
+
+  .editor-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  textarea {
+    width: 100%;
+    height: 100%;
+    background: #1a1a2e;
+    color: #c8d6e5;
+    border: none;
+    padding: 16px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    tab-size: 2;
+  }
+
+  textarea::placeholder { color: #4a4a6a; }
+
+  .divider {
+    width: 48px;
+    background: #16213e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-left: 1px solid #0f3460;
+    border-right: 1px solid #0f3460;
+  }
+
+  .divider .btn {
+    font-size: 18px;
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .status-bar {
+    background: #16213e;
+    padding: 6px 16px;
+    font-size: 12px;
+    border-top: 1px solid #0f3460;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .status-msg { color: #a0a0c0; }
+  .status-msg.error { color: #e94560; }
+  .status-msg.success { color: #4ecca3; }
+
+  .format-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .format-selector label { font-size: 12px; color: #a0a0c0; }
+
+  .format-selector select {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+    outline: none;
+  }
+
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .toast.success { background: #4ecca3; color: #1a1a2e; }
+  .toast.error { background: #e94560; color: #fff; }
+
+  @media (max-width: 768px) {
+    .main { flex-direction: column; }
+    .divider {
+      width: 100%;
+      flex-direction: row;
+      border-left: none;
+      border-right: none;
+      border-top: 1px solid #0f3460;
+      border-bottom: 1px solid #0f3460;
+      padding: 4px 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>JSON &harr; XML 转换器</h1>
+  <div class="header-actions">
+    <button class="btn" onclick="loadSample('json')">JSON 示例</button>
+    <button class="btn" onclick="loadSample('xml')">XML 示例</button>
+    <button class="btn" onclick="clearAll()">清空</button>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Left Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="format-selector">
+        <label>格式:</label>
+        <select id="leftFormat" onchange="onFormatChange('left')">
+          <option value="json">JSON</option>
+          <option value="xml">XML</option>
+        </select>
+      </div>
+      <div class="panel-actions">
+        <button class="btn" onclick="beautify('left')">美化</button>
+        <button class="btn" onclick="minify('left')">压缩</button>
+        <button class="btn" onclick="validate('left')">验证</button>
+        <button class="btn" onclick="copyContent('left')">复制</button>
+      </div>
+    </div>
+    <div class="editor-wrap">
+      <textarea id="leftEditor" placeholder="在此粘贴 JSON 或 XML ..."></textarea>
+    </div>
+  </div>
+
+  <!-- Divider with conversion buttons -->
+  <div class="divider">
+    <button class="btn primary" onclick="convertRight()" title="转换到右侧">&rarr;</button>
+    <button class="btn primary" onclick="convertLeft()" title="转换到左侧">&larr;</button>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="format-selector">
+        <label>格式:</label>
+        <select id="rightFormat" onchange="onFormatChange('right')">
+          <option value="xml">XML</option>
+          <option value="json">JSON</option>
+        </select>
+      </div>
+      <div class="panel-actions">
+        <button class="btn" onclick="beautify('right')">美化</button>
+        <button class="btn" onclick="minify('right')">压缩</button>
+        <button class="btn" onclick="validate('right')">验证</button>
+        <button class="btn" onclick="copyContent('right')">复制</button>
+      </div>
+    </div>
+    <div class="editor-wrap">
+      <textarea id="rightEditor" placeholder="转换结果将显示在这里 ..."></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span id="statusMsg" class="status-msg">就绪</span>
+  <span id="statusInfo" class="status-msg"></span>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const leftEditor = document.getElementById('leftEditor');
+const rightEditor = document.getElementById('rightEditor');
+const leftFormat = document.getElementById('leftFormat');
+const rightFormat = document.getElementById('rightFormat');
+const statusMsg = document.getElementById('statusMsg');
+const statusInfo = document.getElementById('statusInfo');
+
+// ── Toast ──
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function setStatus(msg, type) {
+  statusMsg.textContent = msg;
+  statusMsg.className = 'status-msg' + (type ? ' ' + type : '');
+}
+
+// ── JSON → XML ──
+function jsonToXml(obj, indent, rootTag) {
+  if (indent === undefined) indent = 0;
+  const pad = '  '.repeat(indent);
+  let xml = '';
+
+  if (Array.isArray(obj)) {
+    for (const item of obj) {
+      xml += pad + '<item>\n';
+      xml += jsonToXml(item, indent + 1);
+      xml += pad + '</item>\n';
+    }
+  } else if (typeof obj === 'object' && obj !== null) {
+    for (const key of Object.keys(obj)) {
+      const val = obj[key];
+      const safeKey = escapeXmlTag(key);
+      if (Array.isArray(val)) {
+        for (const item of val) {
+          if (typeof item === 'object' && item !== null) {
+            xml += pad + '<' + safeKey + '>\n';
+            xml += jsonToXml(item, indent + 1);
+            xml += pad + '</' + safeKey + '>\n';
+          } else {
+            xml += pad + '<' + safeKey + '>' + escapeXml(String(item)) + '</' + safeKey + '>\n';
+          }
+        }
+      } else if (typeof val === 'object' && val !== null) {
+        xml += pad + '<' + safeKey + '>\n';
+        xml += jsonToXml(val, indent + 1);
+        xml += pad + '</' + safeKey + '>\n';
+      } else if (val === null) {
+        xml += pad + '<' + safeKey + ' xsi:nil="true"/>\n';
+      } else {
+        xml += pad + '<' + safeKey + '>' + escapeXml(String(val)) + '</' + safeKey + '>\n';
+      }
+    }
+  } else {
+    xml += pad + escapeXml(String(obj)) + '\n';
+  }
+  return xml;
+}
+
+function escapeXml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+function escapeXmlTag(s) {
+  // XML tag names: replace invalid chars with underscore
+  let tag = s.replace(/[^a-zA-Z0-9_.\-]/g, '_');
+  if (/^[^a-zA-Z_]/.test(tag)) tag = '_' + tag;
+  return tag;
+}
+
+function convertJsonToXml(jsonStr) {
+  const obj = JSON.parse(jsonStr);
+  let rootTag = 'root';
+  let inner;
+  if (Array.isArray(obj)) {
+    inner = jsonToXml(obj, 1);
+  } else {
+    inner = jsonToXml(obj, 1);
+  }
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<' + rootTag + '>\n' + inner + '</' + rootTag + '>';
+}
+
+// ── XML → JSON ──
+function xmlToJson(xmlStr) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlStr, 'application/xml');
+
+  const errors = doc.getElementsByTagName('parsererror');
+  if (errors.length > 0) {
+    throw new Error('XML 语法错误: ' + errors[0].textContent.split('\n')[0]);
+  }
+
+  function nodeToObj(node) {
+    // Only element nodes
+    const children = Array.from(node.childNodes).filter(n => n.nodeType === 1);
+    const textContent = Array.from(node.childNodes)
+      .filter(n => n.nodeType === 3)
+      .map(n => n.textContent.trim())
+      .join('');
+
+    if (children.length === 0) {
+      // Leaf: try to parse as number/boolean/null
+      return parseValue(textContent);
+    }
+
+    // Group children by tag name to detect arrays
+    const groups = {};
+    for (const child of children) {
+      const tag = child.tagName;
+      if (!groups[tag]) groups[tag] = [];
+      groups[tag].push(child);
+    }
+
+    const obj = {};
+    for (const tag in groups) {
+      if (groups[tag].length > 1) {
+        obj[tag] = groups[tag].map(c => nodeToObj(c));
+      } else {
+        obj[tag] = nodeToObj(groups[tag][0]);
+      }
+    }
+    return obj;
+  }
+
+  function parseValue(s) {
+    if (s === '') return '';
+    if (s === 'true') return true;
+    if (s === 'false') return false;
+    if (s === 'null') return null;
+    const n = Number(s);
+    if (!isNaN(n) && s.trim() !== '') return n;
+    return s;
+  }
+
+  const root = doc.documentElement;
+  return JSON.stringify(nodeToObj(root), null, 2);
+}
+
+// ── Convert ──
+function convertRight() {
+  const src = leftEditor.value.trim();
+  if (!src) { setStatus('左侧面板为空', 'error'); return; }
+
+  const srcFmt = leftFormat.value;
+  const dstFmt = srcFmt === 'json' ? 'xml' : 'json';
+
+  try {
+    let result;
+    if (srcFmt === 'json') {
+      result = convertJsonToXml(src);
+      rightFormat.value = 'xml';
+    } else {
+      result = xmlToJson(src);
+      rightFormat.value = 'json';
+    }
+    rightEditor.value = result;
+    setStatus('转换成功: ' + srcFmt.toUpperCase() + ' → ' + dstFmt.toUpperCase(), 'success');
+    updateInfo('right');
+  } catch (e) {
+    setStatus('转换失败: ' + e.message, 'error');
+    showToast('转换失败: ' + e.message, 'error');
+  }
+}
+
+function convertLeft() {
+  const src = rightEditor.value.trim();
+  if (!src) { setStatus('右侧面板为空', 'error'); return; }
+
+  const srcFmt = rightFormat.value;
+  const dstFmt = srcFmt === 'json' ? 'xml' : 'json';
+
+  try {
+    let result;
+    if (srcFmt === 'json') {
+      result = convertJsonToXml(src);
+      leftFormat.value = 'xml';
+    } else {
+      result = xmlToJson(src);
+      leftFormat.value = 'json';
+    }
+    leftEditor.value = result;
+    setStatus('转换成功: ' + srcFmt.toUpperCase() + ' → ' + dstFmt.toUpperCase(), 'success');
+    updateInfo('left');
+  } catch (e) {
+    setStatus('转换失败: ' + e.message, 'error');
+    showToast('转换失败: ' + e.message, 'error');
+  }
+}
+
+// ── Beautify ──
+function beautify(side) {
+  const editor = side === 'left' ? leftEditor : rightEditor;
+  const fmt = (side === 'left' ? leftFormat : rightFormat).value;
+  const src = editor.value.trim();
+  if (!src) return;
+
+  try {
+    if (fmt === 'json') {
+      editor.value = JSON.stringify(JSON.parse(src), null, 2);
+    } else {
+      editor.value = beautifyXml(src);
+    }
+    setStatus(fmt.toUpperCase() + ' 美化完成', 'success');
+  } catch (e) {
+    setStatus('美化失败: ' + e.message, 'error');
+  }
+}
+
+function beautifyXml(xml) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xml, 'application/xml');
+  const errors = doc.getElementsByTagName('parsererror');
+  if (errors.length > 0) throw new Error('XML 语法错误');
+
+  function serializeNode(node, depth) {
+    let out = '';
+    const pad = '  '.repeat(depth);
+    if (node.nodeType === 7) { // Processing instruction
+      out += pad + '<?' + node.target + ' ' + node.data + '?>\n';
+    } else if (node.nodeType === 1) { // Element
+      const children = Array.from(node.childNodes);
+      const elemChildren = children.filter(n => n.nodeType === 1);
+      const textOnly = elemChildren.length === 0;
+      const textContent = children.filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
+
+      // Build opening tag with attributes
+      let tag = '<' + node.tagName;
+      for (const attr of node.attributes) {
+        tag += ' ' + attr.name + '="' + escapeXml(attr.value) + '"';
+      }
+
+      if (children.length === 0 && !textContent) {
+        out += pad + tag + '/>\n';
+      } else if (textOnly && textContent) {
+        out += pad + tag + '>' + escapeXml(textContent) + '</' + node.tagName + '>\n';
+      } else {
+        out += pad + tag + '>\n';
+        for (const child of children) {
+          if (child.nodeType === 1) {
+            out += serializeNode(child, depth + 1);
+          }
+        }
+        out += pad + '</' + node.tagName + '>\n';
+      }
+    }
+    return out;
+  }
+
+  let result = '';
+  for (const child of doc.childNodes) {
+    if (child.nodeType === 7) { // PI like <?xml ...?>
+      result += '<?' + child.target + ' ' + child.data + '?>\n';
+    } else if (child.nodeType === 1) {
+      result += serializeNode(child, 0);
+    }
+  }
+  return result.trim();
+}
+
+// ── Minify ──
+function minify(side) {
+  const editor = side === 'left' ? leftEditor : rightEditor;
+  const fmt = (side === 'left' ? leftFormat : rightFormat).value;
+  const src = editor.value.trim();
+  if (!src) return;
+
+  try {
+    if (fmt === 'json') {
+      editor.value = JSON.stringify(JSON.parse(src));
+    } else {
+      // Remove extra whitespace between tags
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(src, 'application/xml');
+      const errors = doc.getElementsByTagName('parsererror');
+      if (errors.length > 0) throw new Error('XML 语法错误');
+      const serializer = new XMLSerializer();
+      editor.value = serializer.serializeToString(doc);
+    }
+    setStatus(fmt.toUpperCase() + ' 压缩完成', 'success');
+  } catch (e) {
+    setStatus('压缩失败: ' + e.message, 'error');
+  }
+}
+
+// ── Validate ──
+function validate(side) {
+  const editor = side === 'left' ? leftEditor : rightEditor;
+  const fmt = (side === 'left' ? leftFormat : rightFormat).value;
+  const src = editor.value.trim();
+
+  if (!src) {
+    setStatus('内容为空，无法验证', 'error');
+    return;
+  }
+
+  try {
+    if (fmt === 'json') {
+      JSON.parse(src);
+      setStatus('JSON 语法正确', 'success');
+      showToast('JSON 语法正确', 'success');
+    } else {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(src, 'application/xml');
+      const errors = doc.getElementsByTagName('parsererror');
+      if (errors.length > 0) {
+        const errText = errors[0].textContent.split('\n')[0];
+        throw new Error(errText);
+      }
+      setStatus('XML 语法正确', 'success');
+      showToast('XML 语法正确', 'success');
+    }
+  } catch (e) {
+    setStatus('语法错误: ' + e.message, 'error');
+    showToast('语法错误: ' + e.message, 'error');
+  }
+}
+
+// ── Copy ──
+function copyContent(side) {
+  const editor = side === 'left' ? leftEditor : rightEditor;
+  if (!editor.value.trim()) {
+    showToast('内容为空', 'error');
+    return;
+  }
+  navigator.clipboard.writeText(editor.value).then(() => {
+    showToast('已复制到剪贴板', 'success');
+  }).catch(() => {
+    // Fallback
+    editor.select();
+    document.execCommand('copy');
+    showToast('已复制到剪贴板', 'success');
+  });
+}
+
+// ── Format change sync ──
+function onFormatChange(side) {
+  // Auto-detect and update placeholder
+  if (side === 'left') {
+    leftEditor.placeholder = leftFormat.value === 'json'
+      ? '在此粘贴 JSON ...'
+      : '在此粘贴 XML ...';
+  } else {
+    rightEditor.placeholder = rightFormat.value === 'json'
+      ? '转换结果 (JSON) ...'
+      : '转换结果 (XML) ...';
+  }
+}
+
+// ── Info update ──
+function updateInfo(side) {
+  const editor = side === 'left' ? leftEditor : rightEditor;
+  const len = editor.value.length;
+  const lines = editor.value.split('\n').length;
+  statusInfo.textContent = '字符: ' + len + ' | 行数: ' + lines;
+}
+
+leftEditor.addEventListener('input', () => updateInfo('left'));
+rightEditor.addEventListener('input', () => updateInfo('right'));
+
+// ── Samples ──
+function loadSample(type) {
+  if (type === 'json') {
+    leftFormat.value = 'json';
+    leftEditor.value = JSON.stringify({
+      "name": "张三",
+      "age": 28,
+      "active": true,
+      "address": {
+        "city": "北京",
+        "street": "朝阳区建国路88号",
+        "zip": "100022"
+      },
+      "skills": ["Java", "Python", "Go"],
+      "projects": [
+        { "name": "API网关", "status": "完成" },
+        { "name": "数据平台", "status": "进行中" }
+      ]
+    }, null, 2);
+    rightFormat.value = 'xml';
+    setStatus('已加载 JSON 示例', 'success');
+    updateInfo('left');
+  } else {
+    leftFormat.value = 'xml';
+    leftEditor.value =
+`<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+  <name>李四</name>
+  <age>32</age>
+  <department>技术部</department>
+  <address>
+    <city>上海</city>
+    <street>浦东新区张江高科</street>
+    <zip>201203</zip>
+  </address>
+  <skill>JavaScript</skill>
+  <skill>TypeScript</skill>
+  <skill>React</skill>
+  <project>
+    <name>前端重构</name>
+    <status>完成</status>
+  </project>
+  <project>
+    <name>微服务迁移</name>
+    <status>进行中</status>
+  </project>
+</employee>`;
+    rightFormat.value = 'json';
+    setStatus('已加载 XML 示例', 'success');
+    updateInfo('left');
+  }
+}
+
+// ── Clear ──
+function clearAll() {
+  leftEditor.value = '';
+  rightEditor.value = '';
+  leftFormat.value = 'json';
+  rightFormat.value = 'xml';
+  setStatus('已清空', 'success');
+  statusInfo.textContent = '';
+}
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', function(e) {
+  // Ctrl+Enter: convert right
+  if (e.ctrlKey && e.key === 'Enter') {
+    e.preventDefault();
+    convertRight();
+  }
+});
+
+// ── Tab key support in textareas ──
+document.querySelectorAll('textarea').forEach(ta => {
+  ta.addEventListener('keydown', function(e) {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = this.selectionStart;
+      const end = this.selectionEnd;
+      this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+      this.selectionStart = this.selectionEnd = start + 2;
+    }
+  });
+});
+</script>
+
+</body>
+</html>
