@@ -1,0 +1,83 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which prettier:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(echo hello:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/issuser/QoderTesetCase/zcyTest2/.qoder/hooks/session-start-test.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/issuser/QoderTesetCase/zcyTest2/.qoder/hooks/session-end-test.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/issuser/QoderTesetCase/zcyTest2/.qoder/hooks/pre-tool-use-test.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/issuser/QoderTesetCase/zcyTest2/.qoder/hooks/pre-tool-use-edit-write-test.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/issuser/QoderTesetCase/zcyTest2/.qoder/hooks/post-tool-use-test.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/issuser/QoderTesetCase/zcyTest2/.qoder/hooks/user-prompt-filter-test.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/issuser/QoderTesetCase/zcyTest2/.qoder/hooks/stop-force-continue-test.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
